@@ -1,0 +1,24 @@
+Autotest: Begin at 2021年 03月 09日 星期二 15:38:48 CST
+cp: 无法创建普通文件"/home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/dst/sh_test/": 不是目录
+docker: Error response from daemon: invalid mount config for type "bind": bind mount source path does not exist: /home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/dst/sh_test.
+See 'docker run --help'.
+/home/git/ostest/lab0/judge.sh: 行 16: /home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/dst/sh_test/hello_os.diff_1: 没有那个文件或目录
+[31m[01m[ You have not passed bash testcase3 1/2 ][0m
+cp: 无法创建普通文件"/home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/dst/sh_test/": 不是目录
+docker: Error response from daemon: invalid mount config for type "bind": bind mount source path does not exist: /home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/dst/sh_test.
+See 'docker run --help'.
+/home/git/ostest/lab0/judge.sh: 行 16: /home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/dst/sh_test/hello_os.diff_2: 没有那个文件或目录
+[31m[01m[ You have not passed bash testcase3 2/2 ][0m
+changefile.sh: line 8: syntax error near unexpected token `elif'
+changefile.sh: line 8: `	elif [ $a -gt 40 ]         # else if loop variable is great than 40   '
+[32m[ File1~40 all exist.You have passed bash testcase5 1/3 ][0m
+[31m[01m[ Newfile doesn't exist.You have not passed bash testcase5 2/3 ][0m
+[31m[01m[ File doesn't remove.You have not passed bash testcase5 3/3 ][0m
+diff: /home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/ray/sh_test2/result_1: 没有那个文件或目录
+[31m[01m[ You have not passed bash testcase6 1/2 ][0m
+diff: /home/git/ostest/target/19375341/lab0-2021-03-09T15:38:48+0800-FVhsv/ray/sh_test2/result_2: 没有那个文件或目录
+[31m[01m[ You have not passed bash testcase6 2/2 ][0m
+[31m[01m[ You have not passed bash testcase7 1/2 ][0m
+[31m[01m[ You have not passed bash testcase7 2/2 ][0m
+[31m[01m[ Can not find your Makefile.You have not passed testcase4 ][0m
+[33m[01m[ You got 4 (of 100) this time. 2021年 03月 09日 星期二 15:38:54 CST ][0m
