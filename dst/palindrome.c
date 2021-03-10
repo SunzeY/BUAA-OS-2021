@@ -10,7 +10,6 @@ int main()
 		b = b / 10;
 	}
 	if(rev == n){
-		printf("N");
 		printf("Y");
 	}else{
 		printf("N");
