@@ -4,4 +4,4 @@ all : fibo.c main.c fibo.h
 
 clean : 
 	cd code && make clean
-
+	rm fibo
