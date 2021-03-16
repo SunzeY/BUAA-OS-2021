@@ -1,5 +1,5 @@
-fibo : ./code/fibo.c ./code/main.c ./include/fibo.h
-	cd code && make
+all : fibo.c main.c fibo.h
+	make --directory=code
 	gcc code/main.o code/fibo.o -o fibo
 
 clean : 
