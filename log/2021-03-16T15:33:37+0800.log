@@ -1,0 +1,23 @@
+Autotest: Begin at 2021年 03月 16日 星期二 15:33:37 CST
+[35m[ Task 1 test begin. ][0m
+gcc programA.c -o programA
+[32m[ Make programA successfully! ][0m
+rm programA
+[32m[ Make clean delete programA successfully. ][0m
+[35m[ Task 1 test completed! ][0m
+[33m[01m[ You now got 20 point(s) ][0m
+[35m[ Task 2 test begin ][0m
+[31m[01m[ You have failed Task 2 testcase 1/4, something wrong in your script.sh! ][0m
+[31m[01m[ You have failed Task 2 testcase 2/4, something wrong in your script.sh! ][0m
+bash: ./script.sh: Permission denied
+[31m[01m[ You have failed Task 2 testcase 3/4, something wrong in your script.sh! ][0m
+bash: ./script.sh: Permission denied
+[31m[01m[ You have failed Task 2 testcase 4/4, something wrong in your script.sh! ][0m
+[35m[ Task 2 test completed. ][0m
+[33m[01m[ You now got 20 point(s) ][0m
+[35m[ Task 3 test begin ][0m
+diff: /home/git/ostest/target/19375341/lab0-Extra-2021-03-16T15:33:37+0800-yhbDT/ext_examB/output: 没有那个文件或目录
+[31m[01m[ Answer incorrect! You have failed Task 3. ][0m
+[35m[ Task 3 test completed. ][0m
+[33m[01m[ You now got 20 point(s) ][0m
+[33m[01m[ You got 20 (of 100) this time. 2021年 03月 16日 星期二 15:35:00 CST ][0m
