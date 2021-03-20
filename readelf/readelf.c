@@ -10,7 +10,7 @@
  *   Check whether it is a ELF file.
  *
  * Pre-Condition:
- *   binary must longer than 4 byte.
+ *   binary must longer than 4i byte.
  *
  * Post-Condition:
  *   Return 0 if `binary` isn't an elf. Otherwise
@@ -39,7 +39,6 @@ int is_elf_format(u_char *binary)
  *   Return 0 if success. Otherwise return < 0.
  *   If success, output address of every section in ELF.
  */
-
 /*
     Exercise 1.2. Please complete func "readelf". 
 */
@@ -63,10 +62,16 @@ int readelf(u_char *binary, int size)
         }
 
         // get section table addr, section header number and section header size.
+	ptr_sh_table = ehdr -> e_shoff + binary;
+	sh_entry_count = ehdr -> e_phnum;
+	sh_entry_size = ehdr -> e_ehsize;
 
         // for each section header, output section number and section addr. 
         // hint: section number starts at 0.
-
+	for (Nr=0;Nr<sh_entry_count;Nr++) {
+		shdr = (Elf32_Shdr*)( ptr_sh_table + sh_entry_size*Nr);
+		printf("%d:0x%x\n", Nr, shdr -> sh_addr);
+	}
 
         return 0;
 }
