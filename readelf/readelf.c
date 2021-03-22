@@ -65,6 +65,7 @@ int readelf(u_char *binary, int size)
 	ptr_sh_table = ehdr -> e_shoff + binary;
 	sh_entry_count = ehdr -> e_shnum;
 	sh_entry_size = ehdr -> e_shentsize;
+	printf("%d", ehdr -> e_type);
 
         // for each section header, output section number and section addr. 
         // hint: section number starts at 0.
