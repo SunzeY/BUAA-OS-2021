@@ -87,6 +87,7 @@ lp_Print(void (*output)(void *, char *, int),
 	fmt++;
 	/* check for long */
 	padc = ' ';
+	ladjust = 0;
 	if (*fmt == '0') {
 		padc = '0';
 		fmt++;
