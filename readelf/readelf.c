@@ -69,6 +69,7 @@ int readelf(u_char *binary, int size)
 
 	if (ident == 1) { //little endian
 
+       		Elf32_Phdr *phdr = NULL;
         	u_char *ptr_ph_table = NULL;
         	Elf32_Half ph_entry_count;
         	Elf32_Half ph_entry_size;
@@ -83,7 +84,7 @@ int readelf(u_char *binary, int size)
 		for (Nr=0;Nr<ph_entry_count;Nr++) {
 			shdr = (Elf32_Phdr*)( ptr_ph_table + ph_entry_size*Nr);
 			printf("%d:0x%x,0x%x\n", Nr, phdr -> p_filesz, phdr -> p_memsz);
-		
+		}
 	} else { //big endian
 
         	u_char *ptr_sh_table = NULL;
