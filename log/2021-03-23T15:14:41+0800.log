@@ -1,0 +1,18 @@
+Autotest: Begin at 2021年 03月 23日 星期二 15:14:41 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+Makefile:15: recipe for target 'clean' failed
+make: *** [clean] Error 1
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:77:4: error: 'shdr' undeclared (first use in this function)
+    shdr = (Elf32_Shdr*)( ptr_ph_table + ph_entry_size*Nr);
+    ^
+readelf.c:77:4: note: each undeclared identifier is reported only once for each function it appears in
+Makefile:6: recipe for target 'readelf.o' failed
+make: *** [readelf.o] Error 1
+[31m[01m[ Cannot find your readelf something wrong with your Makefile ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 03月 23日 星期二 15:14:44 CST ][0m
