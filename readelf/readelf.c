@@ -7,8 +7,8 @@
 #include "kerelf.h"
 #include <stdio.h>
 
-#define r_32(v) = (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
-#define r_16(v) = (((v&0xff)<<8)|(v>>8)&0xff)
+#define r_32(v) (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+#define r_16(v) (((v&0xff)<<8)|(v>>8)&0xff)
 /* Overview:
  *   Check whether it is a ELF file.
  *
@@ -52,14 +52,6 @@ int readelf(u_char *binary, int size)
         int Nr;
 	char ident;
 	ident = ehdr -> e_ident[5];
-
-
-        Elf32_Shdr *shdr = NULL;
-
-        u_char *ptr_sh_table = NULL;
-        Elf32_Half sh_entry_count;
-        Elf32_Half sh_entry_size;
-
 
         // check whether `binary` is a ELF file.
         if (size < 4 || !is_elf_format(binary)) {
