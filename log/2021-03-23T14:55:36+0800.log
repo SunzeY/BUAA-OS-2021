@@ -1,0 +1,24 @@
+Autotest: Begin at 2021年 03月 23日 星期二 14:55:36 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+Makefile:15: recipe for target 'clean' failed
+make: *** [clean] Error 1
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:81:9: warning: assignment from incompatible pointer type
+    shdr = (Elf32_Phdr*)( ptr_ph_table + ph_entry_size*Nr);
+         ^
+readelf.c:82:33: error: 'phdr' undeclared (first use in this function)
+    printf("%d:0x%x,0x%x\n", Nr, phdr -> p_filesz, phdr -> p_memsz);
+                                 ^
+readelf.c:82:33: note: each undeclared identifier is reported only once for each function it appears in
+readelf.c:84:4: error: expected '}' before 'else'
+  } else { //big endian
+    ^
+make: *** [readelf.o] Error 1
+Makefile:6: recipe for target 'readelf.o' failed
+[31m[01m[ Cannot find your readelf something wrong with your Makefile ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 03月 23日 星期二 14:55:38 CST ][0m
