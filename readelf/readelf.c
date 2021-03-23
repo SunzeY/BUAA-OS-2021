@@ -79,6 +79,7 @@ int readelf(u_char *binary, int size)
 		}
 	} else { //big endian
 
+       		Elf32_Shdr *shdr = NULL;
         	u_char *ptr_sh_table = NULL;
         	Elf32_Half sh_entry_count;
         	Elf32_Half sh_entry_size;
