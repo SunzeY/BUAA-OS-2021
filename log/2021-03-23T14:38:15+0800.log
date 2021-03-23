@@ -1,0 +1,23 @@
+Autotest: Begin at 2021年 03月 23日 星期二 14:38:15 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+Makefile:15: recipe for target 'clean' failed
+make: *** [clean] Error 1
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:65:22: error: 'Elf32_Ehdr' has no member named 'p_shoff'
+  ptr_ph_table = ehdr -> p_shoff + binary;
+                      ^
+readelf.c:73:37: error: 'Elf32_Phdr' has no member named 'ph_offset'
+   printf("%d:0x%x,0x%x\n", Nr, phdr -> ph_offset, phdr -> ph_align);
+                                     ^
+readelf.c:73:56: error: 'Elf32_Phdr' has no member named 'ph_align'
+   printf("%d:0x%x,0x%x\n", Nr, phdr -> ph_offset, phdr -> ph_align);
+                                                        ^
+Makefile:6: recipe for target 'readelf.o' failed
+make: *** [readelf.o] Error 1
+[31m[01m[ Cannot find your readelf.Please check your compiling infomation. ][0m
+[33m[01m[ You got 10 (of 100) this time. 2021年 03月 23日 星期二 14:38:16 CST ][0m
