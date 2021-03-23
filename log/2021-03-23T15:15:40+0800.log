@@ -1,0 +1,37 @@
+Autotest: Begin at 2021年 03月 23日 星期二 15:15:40 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+make: *** [clean] Error 1
+Makefile:15: recipe for target 'clean' failed
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:77:9: warning: assignment from incompatible pointer type
+    phdr = (Elf32_Shdr*)( ptr_ph_table + ph_entry_size*Nr);
+         ^
+gcc main.o readelf.o -o readelf
+[32m[ Compile success! readelf found. ][0m
+[35m[ PASSED:9 ][0m
+[35m[ TOTAL:9 ][0m
+[32m[ You have passed readelf testElf testcase 1/6 ][0m
+[35m[ PASSED:9 ][0m
+[35m[ TOTAL:9 ][0m
+[32m[ You have passed readelf testElf testcase 2/6 ][0m
+[35m[ PASSED:7 ][0m
+[35m[ TOTAL:7 ][0m
+[32m[ You have passed readelf testElf testcase 3/6 ][0m
+bash: line 1:     9 Segmentation fault      (core dumped) ./readelf testELF4 > stu_result_4
+[35m[ PASSED:0 ][0m
+[35m[ TOTAL:9 ][0m
+[31m[01m[ You have not passed readelf big endian vmlinux testcase 4/6 ][0m
+bash: line 1:     9 Segmentation fault      (core dumped) ./readelf testELF5 > stu_result_5
+[35m[ PASSED:0 ][0m
+[35m[ TOTAL:7 ][0m
+[31m[01m[ You have not passed readelf big endian vmlinux testcase 5/6 ][0m
+bash: line 1:     9 Segmentation fault      (core dumped) ./readelf testELF6 > stu_result_6
+[35m[ PASSED:0 ][0m
+[35m[ TOTAL:16 ][0m
+[31m[01m[ You have not passed readelf big endian vmlinux testcase 6/6 ][0m
+[33m[01m[ You got 55 (of 100) this time. 2021年 03月 23日 星期二 15:15:54 CST ][0m
