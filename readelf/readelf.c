@@ -8,7 +8,7 @@
 #include <stdio.h>
 
 #define r_32(v) (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
-#define r_16(v) (((v&0xff)<<8)|(v>>8)&0xff)
+#define r_16(v) (((v&0xff)<<8)|((v>>8)&0xff))
 /* Overview:
  *   Check whether it is a ELF file.
  *
@@ -85,16 +85,16 @@ int readelf(u_char *binary, int size)
         	Elf32_Half sh_entry_size;
 
        		// get section table addr, section header number and section header size.
-		ptr_sh_table =  ehdr -> e_shoff + binary;
-		sh_entry_count = r_16(ehdr -> e_shnum);
-		sh_entry_size =  r_16(ehdr -> e_shentsize);
+		ptr_sh_table = r_32(ehdr -> e_shoff) + binary;
+		sh_entry_count = r_16((ehdr -> e_shnum));
+		sh_entry_size =  r_16((ehdr -> e_shentsize));
 
         	// for each section header, output section number and section addr. 
         	// hint: section number starts at 0.
 		for (Nr=0;Nr<sh_entry_count;Nr++) {
 			shdr = (Elf32_Shdr*)(ptr_sh_table +sh_entry_size*Nr);
 			printf("%d:0x%x\n", Nr, r_32((shdr -> sh_addr)));
-		}
+	}
 	}
 
         return 0;
