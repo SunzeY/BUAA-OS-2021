@@ -1,0 +1,23 @@
+Autotest: Begin at 2021年 03月 23日 星期二 15:10:32 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+Makefile:15: recipe for target 'clean' failed
+make: *** [clean] Error 1
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:85:9: warning: assignment from incompatible pointer type
+    shdr = (Elf32_Phdr*)( ptr_ph_table + ph_entry_size*Nr);
+         ^
+readelf.c:10:17: error: expected expression before '=' token
+ #define r_32(v) = (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+                 ^
+readelf.c:103:27: note: in expansion of macro 'r_32'
+    printf("%d:0x%x\n", Nr,r_32(shdr -> sh_addr));
+                           ^
+Makefile:6: recipe for target 'readelf.o' failed
+make: *** [readelf.o] Error 1
+[31m[01m[ Cannot find your readelf something wrong with your Makefile ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 03月 23日 星期二 15:10:35 CST ][0m
