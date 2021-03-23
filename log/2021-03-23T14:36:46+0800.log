@@ -1,0 +1,20 @@
+Autotest: Begin at 2021年 03月 23日 星期二 14:36:46 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+make: *** [clean] Error 1
+Makefile:15: recipe for target 'clean' failed
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:65:22: error: 'Elf32_Ehdr' has no member named 'p_shoff'
+  ptr_ph_table = ehdr -> p_shoff + binary;
+                      ^
+readelf.c:71:2: error: expected ';' before 'for'
+  for (Nr=0;Nr<ph_entry_count;Nr++) {
+  ^
+make: *** [readelf.o] Error 1
+Makefile:6: recipe for target 'readelf.o' failed
+[31m[01m[ Cannot find your readelf.Please check your compiling infomation. ][0m
+[33m[01m[ You got 10 (of 100) this time. 2021年 03月 23日 星期二 14:36:55 CST ][0m
