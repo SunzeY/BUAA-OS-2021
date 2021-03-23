@@ -6,6 +6,9 @@
 
 #include "kerelf.h"
 #include <stdio.h>
+
+#define r_32(v) = (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+#define r_16(v) = (((v&0xff)<<8)|(v>>8)&0xff)
 /* Overview:
  *   Check whether it is a ELF file.
  *
@@ -77,7 +80,7 @@ int readelf(u_char *binary, int size)
 
         	// for each section header, output section number and section addr. 
         	// hint: section number starts at 0.
-		for (Nr=0;Nr<sh_entry_count;Nr++) {
+		for (Nr=0;Nr<ph_entry_count;Nr++) {
 			shdr = (Elf32_Phdr*)( ptr_ph_table + ph_entry_size*Nr);
 			printf("%d:0x%x,0x%x\n", Nr, phdr -> p_filesz, phdr -> p_memsz);
 		
@@ -96,7 +99,7 @@ int readelf(u_char *binary, int size)
         	// hint: section number starts at 0.
 		for (Nr=0;Nr<sh_entry_count;Nr++) {
 			shdr = (Elf32_Shdr*)( ptr_sh_table + sh_entry_size*Nr);
-			printf("%d:0x%x\n", Nr, shdr -> sh_addr);
+			printf("%d:0x%x\n", Nr,r_32(shdr -> sh_addr));
 		}
 	}
 
