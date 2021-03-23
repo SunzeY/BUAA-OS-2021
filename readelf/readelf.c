@@ -64,7 +64,7 @@ int readelf(u_char *binary, int size)
         // get section table addr, section header number and section header size.
 	ptr_ph_table = ehdr -> p_shoff + binary;
 	ph_entry_count = ehdr -> e_phnum;
-	ph_entry_size = ehdr -> e_phentsize
+	ph_entry_size = ehdr -> e_phentsize;
 
         // for each section header, output section number and section addr. 
         // hint: section number starts at 0.
