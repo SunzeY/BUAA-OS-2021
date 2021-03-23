@@ -62,7 +62,7 @@ int readelf(u_char *binary, int size)
         }
 
         // get section table addr, section header number and section header size.
-	ptr_ph_table = ehdr -> p_shoff + binary;
+	ptr_ph_table = ehdr -> e_phoff + binary;
 	ph_entry_count = ehdr -> e_phnum;
 	ph_entry_size = ehdr -> e_phentsize;
 
@@ -70,7 +70,7 @@ int readelf(u_char *binary, int size)
         // hint: section number starts at 0.
 	for (Nr=0;Nr<ph_entry_count;Nr++) {
 		phdr = (Elf32_Phdr*)( ptr_ph_table + ph_entry_size*Nr);
-		printf("%d:0x%x,0x%x\n", Nr, phdr -> ph_offset, phdr -> ph_align);
+		printf("%d:0x%x,0x%x\n", Nr, phdr -> p_offset, phdr -> p_align);
 	}
 
         return 0;
