@@ -1,0 +1,38 @@
+Autotest: Begin at 2021年 03月 23日 星期二 15:18:39 CST
+[32m[ readelf.c found ][0m
+rm -rf *.o
+rm readelf
+rm: cannot remove 'readelf': No such file or directory
+Makefile:15: recipe for target 'clean' failed
+make: *** [clean] Error 1
+gcc -I./ -c main.c
+gcc -I./ -c readelf.c
+readelf.c: In function 'readelf':
+readelf.c:10:21: error: invalid operands to binary & (have 'u_char *' and 'int')
+ #define r_32(v) (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+                     ^
+readelf.c:95:25: note: in expansion of macro 'r_32'
+    shdr = (Elf32_Shdr*)(r_32(ptr_sh_table) +r_16(sh_entry_size*Nr));
+                         ^
+readelf.c:10:36: error: invalid operands to binary & (have 'u_char *' and 'int')
+ #define r_32(v) (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+                                    ^
+readelf.c:95:25: note: in expansion of macro 'r_32'
+    shdr = (Elf32_Shdr*)(r_32(ptr_sh_table) +r_16(sh_entry_size*Nr));
+                         ^
+readelf.c:10:52: error: invalid operands to binary >> (have 'u_char *' and 'int')
+ #define r_32(v) (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+                                                    ^
+readelf.c:95:25: note: in expansion of macro 'r_32'
+    shdr = (Elf32_Shdr*)(r_32(ptr_sh_table) +r_16(sh_entry_size*Nr));
+                         ^
+readelf.c:10:68: error: invalid operands to binary >> (have 'u_char *' and 'int')
+ #define r_32(v) (((v&0xff)<<24)|((v&0xff00)<<8)|((v>>8)&0xff00)|((v>>24)&0xff))
+                                                                    ^
+readelf.c:95:25: note: in expansion of macro 'r_32'
+    shdr = (Elf32_Shdr*)(r_32(ptr_sh_table) +r_16(sh_entry_size*Nr));
+                         ^
+Makefile:6: recipe for target 'readelf.o' failed
+make: *** [readelf.o] Error 1
+[31m[01m[ Cannot find your readelf something wrong with your Makefile ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 03月 23日 星期二 15:18:42 CST ][0m
