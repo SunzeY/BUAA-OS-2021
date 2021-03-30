@@ -159,7 +159,7 @@ lp_Print(void (*output)(void *, char *, int),
 		int a = st1->a;	
 		if (a < 0) {
 			a = -a;
-			negFlag = 1;
+			negFlag = 0;
 		}
 		length = PrintNum(buf, a, 10, negFlag, width, ladjust, padc, 0);
 		OUTPUT(arg, buf, length);	
@@ -180,7 +180,7 @@ lp_Print(void (*output)(void *, char *, int),
 		negFlag = 0;	
 		if (dd < 0) {
 			dd = -dd;
-			negFlag = 1;
+			negFlag = 0;
 		}
 		length = PrintNum(buf, dd, 10, negFlag, width, ladjust, padc, 0);
 		OUTPUT(arg, buf, length);	
@@ -201,7 +201,7 @@ lp_Print(void (*output)(void *, char *, int),
 			negFlag = 0;		
 			if (temp < 0) {
 				temp  = -temp;
-				negFlag = 1;
+				negFlag = 0;
 			}
 			length = PrintNum(buf, temp, 10, negFlag, width, ladjust, padc, 0);
 			OUTPUT(arg, buf, length);
