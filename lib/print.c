@@ -159,7 +159,7 @@ lp_Print(void (*output)(void *, char *, int),
 		int a = st1->a;	
 		if (a < 0) {
 			a = -a;
-			negFlag = 0;
+			negFlag = 1;
 		}
 		length = PrintNum(buf, a, 10, negFlag, width, ladjust, padc, 0);
 		OUTPUT(arg, buf, length);	
@@ -180,7 +180,7 @@ lp_Print(void (*output)(void *, char *, int),
 		negFlag = 0;	
 		if (dd < 0) {
 			dd = -dd;
-			negFlag = 0;
+			negFlag = 1;
 		}
 		length = PrintNum(buf, dd, 10, negFlag, width, ladjust, padc, 0);
 		OUTPUT(arg, buf, length);	
@@ -192,7 +192,12 @@ lp_Print(void (*output)(void *, char *, int),
 		length = PrintChar(buf, '{', 1, 0);
 		OUTPUT(arg, buf, length);
 		int size = st2->size;	
-		length = PrintNum(buf, size, 10, 0, width, ladjust, padc, 0);
+		negFlag = 0;		
+		if (size < 0) {
+			size  = -size;
+			negFlag = 1;
+		}
+		length = PrintNum(buf, size, 10, negFlag, width, ladjust, padc, 0);
 		OUTPUT(arg, buf, length);
 		int for_i = 0;
 		int* array = st2->c;
@@ -201,7 +206,7 @@ lp_Print(void (*output)(void *, char *, int),
 			negFlag = 0;		
 			if (temp < 0) {
 				temp  = -temp;
-				negFlag = 0;
+				negFlag = 1;
 			}
 			length = PrintNum(buf, temp, 10, negFlag, width, ladjust, padc, 0);
 			OUTPUT(arg, buf, length);
