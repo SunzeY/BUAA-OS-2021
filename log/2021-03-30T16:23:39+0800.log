@@ -1,0 +1,15 @@
+Autotest: Begin at 2021年 03月 30日 星期二 16:23:39 CST
+[32m[ We found /home/git/ostest/target/19375341/lab1-2-Extra-2021-03-30T16:23:39+0800-KtjWx/my_cal/my_cal.c ][0m
+[32m[ We found /home/git/ostest/target/19375341/lab1-2-Extra-2021-03-30T16:23:39+0800-KtjWx/my_cal/my_driver.S ][0m
+[32m[ We found /home/git/ostest/target/19375341/lab1-2-Extra-2021-03-30T16:23:39+0800-KtjWx/my_cal/Makefile ][0m
+Checkfile complete
+finish file cleaning
+rm -rf *~ *.o
+/OSLAB/compiler/usr/bin/mips_4KC-gcc    -c -o my_driver.o my_driver.S
+my_driver.S:1:24: error: asm/regdef.h: No such file or directory
+my_driver.S:39:21: error: asm/asm.h: No such file or directory
+make: *** [my_driver.o] Error 1
+<builtin>: recipe for target 'my_driver.o' failed
+[31m[01m[ Can't find /home/git/ostest/target/19375341/lab1-2-Extra-2021-03-30T16:23:39+0800-KtjWx/my_cal/my_cal.o ][0m
+[31m[01m[ Some files are missing,task 1 failed ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 03月 30日 星期二 16:23:42 CST ][0m
