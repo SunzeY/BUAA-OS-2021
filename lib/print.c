@@ -26,6 +26,18 @@ static const char theFatalMsg[] = "fatal error in lp_Print!";
 /* -*-
  * A low level printf() function.
  */
+struct s1 {
+	int a;
+	char b;
+	char c;
+	int d;
+};
+
+struct s2 {
+ 	int size;
+	int c[];
+};
+
 void
 lp_Print(void (*output)(void *, char *, int), 
 	 void * arg,
@@ -46,7 +58,8 @@ lp_Print(void (*output)(void *, char *, int),
     char c;
     char *s;
     long int num;
-
+    struct s1* st1;
+    struct s2* st2;
 	
 
     int longFlag;
@@ -55,7 +68,7 @@ lp_Print(void (*output)(void *, char *, int),
     int prec;
     int ladjust;
     char padc;
-
+    int type;
     int length;
 
     /*
@@ -112,6 +125,12 @@ lp_Print(void (*output)(void *, char *, int),
 			fmt++;
 		}
 	} 
+	type = 0;
+	if (*fmt == '$') {
+		fmt++;
+		type = Ctod(*fmt);
+		fmt++;
+	}
 	/* check format flag */
 	longFlag = 0;
 	if (*fmt == 'l') {
@@ -131,6 +150,72 @@ lp_Print(void (*output)(void *, char *, int),
 	    length = PrintNum(buf, num, 2, 0, width, ladjust, padc, 0);
 	    OUTPUT(arg, buf, length);
 	    break;
+	 case 'T':
+	    if (type==1) {
+		st1 = va_arg(ap, struct s1*);
+		length = PrintChar(buf, '{', 1, 0);
+	        OUTPUT(arg, buf, length);
+		negFlag = 0;
+		int a = st1->a;	
+		if (a < 0) {
+			a = -a;
+			negFlag = 1;
+		}
+		length = PrintNum(buf, a, 10, negFlag, width, ladjust, padc, 0);
+		OUTPUT(arg, buf, length);	
+		length = PrintChar(buf, ',', 1, 0);
+	        OUTPUT(arg, buf, length);
+		char b = st1->b;
+	   	length = PrintChar(buf, b, width, ladjust);
+	        OUTPUT(arg, buf, length);	
+		length = PrintChar(buf, ',', 1, 0);	
+		OUTPUT(arg, buf, length);
+
+		char c0 = st1->c;
+	   	length = PrintChar(buf, c0, width, ladjust);
+	        OUTPUT(arg, buf, length);	
+		length = PrintChar(buf, ',', 1, 0);	
+		OUTPUT(arg, buf, length);	
+		int dd = st1->d;
+		negFlag = 0;	
+		if (dd < 0) {
+			dd = -dd;
+			negFlag = 1;
+		}
+		length = PrintNum(buf, dd, 10, negFlag, width, ladjust, padc, 0);
+		OUTPUT(arg, buf, length);	
+		length = PrintChar(buf, '}', 1, 0);
+	        OUTPUT(arg, buf, length);
+	    }
+	    else {
+		st2 = va_arg(ap, struct s2*);
+		length = PrintChar(buf, '{', 1, 0);
+		OUTPUT(arg, buf, length);
+		int size = st2->size;	
+		length = PrintNum(buf, size, 10, 0, width, ladjust, padc, 0);
+		OUTPUT(arg, buf, length);
+		int for_i = 0;
+		int* array = st2->c;
+		for (for_i=0;for_i<size;for_i++) {
+			int temp = array[for_i];
+			negFlag = 0;		
+			if (temp < 0) {
+				temp  = -temp;
+				negFlag = 1;
+			}
+			length = PrintNum(buf, temp, 10, negFlag, width, ladjust, padc, 0);
+			OUTPUT(arg, buf, length);
+			if (for_i != size-1) {
+				length = PrintChar(buf, ',', 1, 0);	
+				OUTPUT(arg, buf, length);
+			}
+			else {		
+				length = PrintChar(buf, '}', 1, 0);	
+				OUTPUT(arg, buf, length);
+			}	
+		}	
+	     }
+          break;
 
 	 case 'd':
 	 case 'D':

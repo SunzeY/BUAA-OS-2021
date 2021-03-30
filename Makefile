@@ -25,9 +25,6 @@ ifneq ($(test_dir),)
 objects :=$(objects) $(test_dir)/*.o
 endif
 
-run:
-	 /OSLAB/gxemul -E testmips -C R3000 -M 64 ./gxemul/vmlinux
-
 .PHONY: all $(modules) clean
 
 all: $(modules) vmlinux
