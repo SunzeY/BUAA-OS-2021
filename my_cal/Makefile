@@ -1,7 +1,10 @@
 INCLUDES := -I../include/
 
-%.o: %.c %.S
+%.o: %.c
 	$(CC) $(DEFS) $(CFLAGS) $(INCLUDES) -c $<
+
+%.o: %.S
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< 
 
 .PHONY: clean
 
@@ -12,4 +15,3 @@ clean:
 
 
 include ../include.mk
-
