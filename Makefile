@@ -20,6 +20,8 @@ objects		  := $(boot_dir)/start.o			  \
 				 $(init_dir)/init.o			  \
 			   	 $(drivers_dir)/gxconsole/console.o \
 				 $(lib_dir)/*.o
+run: 
+	 /OSLAB/gxemul -E testmips -C R3000 -M 64 ./gxemul/vmlinux
 
 ifneq ($(test_dir),)
 objects :=$(objects) $(test_dir)/*.o
