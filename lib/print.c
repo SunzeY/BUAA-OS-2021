@@ -199,6 +199,14 @@ lp_Print(void (*output)(void *, char *, int),
 		}
 		length = PrintNum(buf, size, 10, negFlag, width, ladjust, padc, 0);
 		OUTPUT(arg, buf, length);
+		if (size == 0) {
+			length = PrintChar(buf, '}', 1, 0);	
+			OUTPUT(arg, buf, length);
+		}
+		else {
+			length = PrintChar(buf, ',', 1, 0);	
+			OUTPUT(arg, buf, length);
+		}
 		int for_i = 0;
 		int* array = st2->c;
 		for (for_i=0;for_i<size;for_i++) {
