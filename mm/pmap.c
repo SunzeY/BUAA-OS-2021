@@ -217,7 +217,7 @@ page_alloc(struct Page **pp)
     struct Page *ppage_temp;
 
     /* Step 1: Get a page from free memory. If fails, return the error code.*/
-	if (LIST_FIRST(&page_free_list) == NULL) {
+	if (LIST_EMPTY(&page_free_list)) {
 		return -E_NO_MEM;
 	}
 	ppage_temp = LIST_FIRST(&page_free_list);
@@ -226,7 +226,7 @@ page_alloc(struct Page **pp)
     /* Step 2: Initialize this page.
      * Hint: use `bzero`. */
 	bzero(page2kva(ppage_temp), BY2PG);
-	pp = &ppage_temp;
+	*pp = ppage_temp;
 	return 0;
 }
 
