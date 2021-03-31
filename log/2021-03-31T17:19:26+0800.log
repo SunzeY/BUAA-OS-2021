@@ -1,0 +1,70 @@
+Autotest: Begin at 2021年 03月 31日 星期三 17:19:26 CST
+Begin build at 2021年 03月 31日 星期三 17:19:27 CST
+Cleanning the project.................
+
+for d in boot drivers init lib mm;	\
+		do					\
+			make --directory=$d clean; \
+		done; \
+	rm -rf *.o *~ gxemul/vmlinux
+make[1]: Entering directory `/usr/src/workdir/boot'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/boot'
+make[1]: Entering directory `/usr/src/workdir/drivers'
+for d in gxconsole; \
+		do				\
+			make --directory=$d clean; \
+		done
+make[2]: Entering directory `/usr/src/workdir/drivers/gxconsole'
+rm -rf *.o *~
+make[2]: Leaving directory `/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory `/usr/src/workdir/drivers'
+make[1]: Entering directory `/usr/src/workdir/init'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/init'
+make[1]: Entering directory `/usr/src/workdir/lib'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/lib'
+make[1]: Entering directory `/usr/src/workdir/mm'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/mm'
+
+Building the project..................
+
+make --directory=boot
+make[1]: Entering directory `/usr/src/workdir/boot'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c start.S 
+make[1]: Leaving directory `/usr/src/workdir/boot'
+make --directory=drivers
+make[1]: Entering directory `/usr/src/workdir/drivers'
+make --directory=gxconsole
+make[2]: Entering directory `/usr/src/workdir/drivers/gxconsole'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000   -c -o console.o console.c
+make[2]: Leaving directory `/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory `/usr/src/workdir/drivers'
+make --directory=init
+make[1]: Entering directory `/usr/src/workdir/init'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include -c init.c
+In file included from ../include/pmap.h:5,
+                 from init.c:2:
+../include/queue.h:112: error: parse error before '->' token
+../include/queue.h:117: error: parse error before '->' token
+../include/queue.h:118: error: parse error before '->' token
+../include/queue.h:162: error: parse error before '->' token
+../include/queue.h:163: error: parse error before '(' token
+../include/queue.h:163: warning: type defaults to 'int' in declaration of 'LIST_NEXT'
+../include/queue.h:163: warning: type defaults to 'int' in declaration of 'field'
+../include/queue.h:163: error: parse error before ')' token
+../include/queue.h:164: error: parse error before '(' token
+../include/queue.h:164: warning: type defaults to 'int' in declaration of 'LIST_NEXT'
+../include/queue.h:164: warning: type defaults to 'int' in declaration of 'field'
+../include/queue.h:164: error: parse error before ')' token
+../include/queue.h:168: error: parse error before '->' token
+make[1]: *** [init.o] Error 1
+make[1]: Leaving directory `/usr/src/workdir/init'
+make: *** [init] Error 2
+Compile Error!
+
+End build at 2021年 03月 31日 星期三 17:19:29 CST
+[31m[01m[ There is something wrong with your vmlinx. ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 03月 31日 星期三 17:19:29 CST ][0m
