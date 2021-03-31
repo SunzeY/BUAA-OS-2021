@@ -13,4 +13,4 @@ clean:
 	rm -rf *~ *.o
 
 
-include ../include.mk
+include ../include.
