@@ -181,12 +181,12 @@ page_init(void)
 	LIST_INIT(&page_free_list);
 
     /* Step 2: Align `freemem` up to multiple of BY2PG. */
-	freemem = ROUND(freemem,BY2PG);
+	ROUND(freemem,BY2PG);
 
     /* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
      * filed to 1) */
 	struct Page* now;
-	for (now=pages;page2kva(now)<PADDR(freemem);now++) {
+	for (now=pages;page2kva(now)<freemem;now++) {
 		now->pp_ref = 1;	
 	}
 
@@ -222,6 +222,7 @@ page_alloc(struct Page **pp)
 	}
 	ppage_temp = LIST_FIRST(&page_free_list);
 	LIST_REMOVE(ppage_temp, pp_link);
+
     /* Step 2: Initialize this page.
      * Hint: use `bzero`. */
 	bzero(page2kva(ppage_temp), BY2PG);
@@ -242,7 +243,7 @@ page_free(struct Page *pp)
 	}
 
     /* Step 2: If the `pp_ref` reaches to 0, mark this page as free and return. */
-	if (pp->pp_ref = 0) {
+	if (pp->pp_ref == 0) {
 		LIST_INSERT_HEAD(&page_free_list, pp, pp_link);
 		return;
 	}
