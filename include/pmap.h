@@ -80,7 +80,8 @@ va2pa(Pde *pgdir, u_long va)
 }
 
 /********** functions for memory management(see implementation in mm/pmap.c). ***********/
-
+void test_queue();
+void pm_check();
 void mips_detect_memory();
 
 void mips_vm_init();
