@@ -18,6 +18,8 @@ int main()
 
 	mips_init();
 	panic("main is over is error!");
-
+	get_page_status(0x00002000); 
+	get_page_status(0x00003000); 
+	get_page_status(0x00001000); 
 	return 0;
 }

@@ -257,7 +257,7 @@ page_alloc2(struct Page **pp)
 	return 0;
 }
 
-static int testtimes = 1;
+static int testtimes = 0;
 void get_page_status(int pa)
 {	
 	int temp = 0;
