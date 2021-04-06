@@ -8,7 +8,7 @@
 
 void test_queue();
 void pm_check();
-
+void get_page_status(int pa);
 LIST_HEAD(Page_list, Page);
 typedef LIST_ENTRY(Page) Page_LIST_entry_t;
 
@@ -84,7 +84,6 @@ va2pa(Pde *pgdir, u_long va)
 /********** functions for memory management(see implementation in mm/pmap.c). ***********/
 void mips_detect_memory();
 void mips_vm_init();
-void get_page_status(int pa);
 void mips_init();
 void page_init(void);
 void page_check();

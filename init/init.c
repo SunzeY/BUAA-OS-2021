@@ -12,7 +12,9 @@ void mips_init()
 	mips_detect_memory();
 	mips_vm_init();
 	page_init();
-
+	get_page_status(0x2000);
+	get_page_status(0x1000);
+	get_page_status(0x3000);
 	physical_memory_manage_check();
         //page_check();
 
