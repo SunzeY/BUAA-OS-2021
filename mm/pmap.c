@@ -186,14 +186,20 @@ page_init(void)
     /* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
      * filed to 1) */
 	struct Page* now;
+	struct Page* last;
 	for (now=pages;page2kva(now)<freemem;now++) {
 		now->pp_ref = 1;	
 	}
 
     /* Step 4: Mark the other memory as free. */
-	for (now=&pages[PPN(PADDR(freemem))];page2ppn(now)<npage;now++) {
+	now = pa2page(PADDR(freemem));
+	now -> pp_ref = 0;
+	LIST_INSERT_HEAD(&page_free_list, now, pp_link);
+	last = now;
+	for (now++;page2ppn(now)<npage;now++) {
 		now->pp_ref = 0;
 		LIST_INSERT_HEAD(&page_free_list, now, pp_link);
+		last = now;
 	}
 }
 
@@ -225,7 +231,7 @@ page_alloc(struct Page **pp)
 
     /* Step 2: Initialize this page.
      * Hint: use `bzero`. */
-	bzero(page2kva(ppage_temp), BY2PG);
+	bzero(((void*)page2kva(ppage_temp)), BY2PG);
 	*pp = ppage_temp;
 	return 0;
 }
