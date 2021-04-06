@@ -18,6 +18,7 @@ static u_long freemem;
 
 static struct Page_list page_free_list;	/* Free list of physical pages */
 
+static int testtimes=0;
 
 /* Overview:
  	Initialize basemem and npage.
@@ -257,7 +258,6 @@ page_alloc2(struct Page **pp)
 	return 0;
 }
 
-int testtimes=0;
 void get_page_status(int pa)
 {	
 	int temp = 0;
@@ -283,7 +283,7 @@ void get_page_status(int pa)
 		status = 3;
 	}
 	testtimes++;
-	printf("times:%d, page status:%d\n", testtimes, status);
+	printf("times:1, page status:%d\n", status);
 }
 
 /*Overview:
