@@ -257,12 +257,12 @@ page_alloc2(struct Page **pp)
 	return 0;
 }
 
-int times = 1;
+static int testtimes = 1;
 void get_page_status(int pa)
 {	
 	int temp = 0;
 	int status = 0;
-	times = times + 1;
+	testtimes = testtimes + 1;
 	struct Page *pp = pa2page(pa);
 	struct Page *oppage;
 	LIST_FOREACH(oppage, &page_free_list, pp_link)
@@ -283,7 +283,7 @@ void get_page_status(int pa)
 	else {
 		status = 3;
 	}
-	printf("times:%d, page status:%d\n", times, status);
+	printf("times:%d, page status:%d\n", testtimes, status);
 }
 
 /*Overview:
