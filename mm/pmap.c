@@ -262,7 +262,7 @@ void get_page_status(int pa)
 {	
 	int temp = 0;
 	int status = 0;
-	times++;
+	times = times + 1;
 	struct Page *pp = pa2page(pa);
 	struct Page *oppage;
 	LIST_FOREACH(oppage, &page_free_list, pp_link)
