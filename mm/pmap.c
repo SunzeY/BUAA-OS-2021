@@ -257,7 +257,7 @@ page_alloc2(struct Page **pp)
 	return 0;
 }
 
-int testtimes=1;
+int testtimes=0;
 void get_page_status(int pa)
 {	
 	int temp = 0;
@@ -282,6 +282,7 @@ void get_page_status(int pa)
 	else {
 		status = 3;
 	}
+	testtimes++;
 	printf("times:%d, page status:%d\n", testtimes, status);
 }
 
