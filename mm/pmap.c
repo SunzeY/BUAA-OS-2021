@@ -27,7 +27,7 @@ void mips_detect_memory()
     /* Step 1: Initialize basemem.
      * (When use real computer, CMOS tells us how many kilobytes there are). */
 	maxpa = 1<<26;
-	basemem = 1<<26;
+	basemem = 1<<26 ;
 	extmem = 0;
 
     // Step 2: Calculate corresponding npage value.
@@ -101,7 +101,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
      * table. */
 	if (!((*pgdir_entryp) & PTE_V)) {
 		if (create == 1) {
-			*pgdir_entryp = KADDR(alloc(BY2PG, BY2PG, 1));
+			*pgdir_entryp = (Pde)KADDR(alloc(BY2PG, BY2PG, 1));
 			*pgdir_entryp = *pgdir_entryp | PTE_V | PTE_R;
 		}
 		else {
@@ -137,7 +137,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
 	for (i=0; i<size; i+=BY2PG) {
 		va_temp = va + i;
 		pgtable_entry = boot_pgdir_walk(pgdir, va_temp, 1);
-		*pgtable_entry = pa+i | perm | PTE_R;
+		*pgtable_entry = (pa + i) |(perm | PTE_R);
 	}
 
 }
@@ -195,7 +195,7 @@ page_init(void)
 	LIST_INIT(&page_free_list);
 
     /* Step 2: Align `freemem` up to multiple of BY2PG. */
-	ROUND(freemem,BY2PG);
+	freemem = ROUND(freemem,BY2PG);
 
     /* Step 3: Mark all memory blow `freemem` as used(set `pp_ref`
      * filed to 1) */
@@ -354,14 +354,16 @@ page_insert(Pde *pgdir, struct Page *pp, u_long va, u_int perm)
     /* Step 2: Update TLB. */
 
     /* hint: use tlb_invalidate function */
-
+	tlb_invalidate(pgdir, va);
 
     /* Step 3: Do check, re-get page table entry to validate the insertion. */
-
     /* Step 3.1 Check if the page can be insert, if can’t return -E_NO_MEM */
-
+	if (pgdir_walk(pgdir, va, 1, &pgtable_entry) == -E_NO_MEM) {
+		return -E_NO_MEM;
+	}
     /* Step 3.2 Insert page and increment the pp_ref */
-
+	*pgtable_entry = (page2pa(pp) | PERM);
+	pp -> pp_ref++;
     return 0;
 }
 
