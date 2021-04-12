@@ -101,7 +101,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
      * table. */
 	if (!((*pgdir_entryp) & PTE_V)) {
 		if (create == 1) {
-			*pgdir_entryp = (Pde)KADDR(alloc(BY2PG, BY2PG, 1));
+			*pgdir_entryp = PADDR(alloc(BY2PG, BY2PG, 1));
 			*pgdir_entryp = *pgdir_entryp | PTE_V | PTE_R;
 		}
 		else {
