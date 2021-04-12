@@ -94,16 +94,26 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
     /* Step 1: Get the corresponding page directory entry and page table. */
     /* Hint: Use KADDR and PTE_ADDR to get the page table from page directory
      * entry value. */
-
+	pgdir_entryp = pgdir + PDX(va);
 
     /* Step 2: If the corresponding page table is not exist and parameter `create`
      * is set, create one. And set the correct permission bits for this new page
      * table. */
-
+	if (!((*pgdir_entryp) & PTE_V)) {
+		if (create == 1) {
+			*pgdir_entryp = KADDR(alloc(BY2PG, BY2PG, 1));
+			*pgdir_entryp = *pgdir_entryp | PTE_V | PTE_R;
+		}
+		else {
+			return 0;
+		}
+	}
+	
+	pgtable = (Pte*) KADDR(PTE_ADDR(*pgdir_entryp));
 
     /* Step 3: Get the page table entry for `va`, and return it. */
-
-
+	pgtable_entry = pgtable + PTX(va);
+	return pgtable_entry;
 }
 
 /*Overview:
@@ -283,16 +293,25 @@ pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
     struct Page *ppage;
 
     /* Step 1: Get the corresponding page directory entry and page table. */
-
+	pgdir_entryp = pgdir + PDX(va);	
 
     /* Step 2: If the corresponding page table is not exist(valid) and parameter `create`
      * is set, create one. And set the correct permission bits for this new page
      * table.
      * When creating new page table, maybe out of memory. */
-
-
+	if (!((*pgdir_entryp) & PTE_V)) {
+		if (create == 1) {
+			if (page_alloc(&ppage) == -E_NO_MEM) {
+				return -E_NO_MEM;
+			}
+			*pgdir_entryp = page2pa(ppage);
+			*pgdir_entryp = *pgdir_entryp | PTE_R | PTE_V;
+		}
+	}
+	
+	pgtable = (Pte*) KADDR(PTE_ADDR(*pgdir_entryp));
     /* Step 3: Set the page table entry to `*ppte` as return value. */
-
+	*ppte = pgtable + PTX(va);
 
     return 0;
 }
