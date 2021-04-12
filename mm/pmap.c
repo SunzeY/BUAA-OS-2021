@@ -310,6 +310,7 @@ pgdir_walk(Pde *pgdir, u_long va, int create, Pte **ppte)
 			}
 			*pgdir_entryp = page2pa(ppage);
 			*pgdir_entryp = *pgdir_entryp | PTE_R | PTE_V;
+			ppage->pp_ref++;
 		}
 	}
 	
