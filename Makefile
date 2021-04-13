@@ -22,7 +22,7 @@ objects		  := $(boot_dir)/start.o			  \
 				 $(lib_dir)/*.o				  \
 				 $(mm_dir)/*.o
 
-.PHONY: all $(modules) clean test
+.PHONY: all $(modules) clean test teststep
 
 all: $(modules) vmlinux
 
@@ -41,4 +41,8 @@ clean:
 
 test:
 	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux	
+
+teststep:	
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux	-V
+
 include include.mk
