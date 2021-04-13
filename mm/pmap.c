@@ -31,7 +31,7 @@ u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 	if (func == 3) {
 		u_long* x;
 		x = &pgdir[(va>>22)&0x3ff];
-		*x = PADDR(pgdir) | PTE_V;
+		//*x = PADDR(pgdir) | PTE_V;
 		return 0;	
 	}
 	return 0;
