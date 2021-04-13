@@ -20,7 +20,7 @@ static struct Page_list page_free_list;	/* Free list of physical pages */
 
 u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 	if (func == 0) {
-		return (u_long) 42;
+		return (u_long) 32;
 	}
 	if (func == 1) {
 		return (u_long) (va + ((va >> 12) << 2));
@@ -29,11 +29,11 @@ u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 		return (u_long) (((va>>22)<<22) + ((n-1)<<12));
 	}
 	if (func == 3) {
-		int* x;
+		u_long* x;
 		x = &pgdir[(va>>22)&0x3ff];
-		*x = PADDR(pgdir) | PTE_V;	
+		*x = PADDR(pgdir) | PTE_V;
+		return 0;	
 	}
-	return 0;
 }
 
 /* Overview:
