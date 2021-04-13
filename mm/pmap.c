@@ -29,8 +29,8 @@ u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 		return ((va>>22)<<22) + (n<<12);
 	}
 	if (func == 3) {
-		u_long* table = pgdir[(va>>22)&0x3ff];
-		*table = KADDR(PTE_ADDR(va));	
+	//	u_long* table = pgdir[(va>>22)&0x3ff];
+	//	*table = KADDR(PTE_ADDR(va));	
 	}
 	return 0;
 }
