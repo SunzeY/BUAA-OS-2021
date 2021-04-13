@@ -26,13 +26,14 @@ int count_page(Pde *pgdir, int *cnt) {
 	for (i=0; i<npage; i++) {
 		cnt[i] = 0;
 	}
+	cnt[PPN(pgdir)]++;
 	for (i=0; i<1024; i++) {
 		pgdir_entryp = pgdir + i;
-		if ((*pgdir_entryp) & PTE_V){
+		if (((*pgdir_entryp) & PTE_V) != 0){
 			cnt[PPN(pgdir_entryp)]++;
 			for (j=0; j<1024; j++) { 
 				pgtable = (Pte*) KADDR(PTE_ADDR(*pgdir_entryp));
-				if (*(pgtable + j) & PTE_V != 0) {
+				if ((*(pgtable + j) & PTE_V)!= 0) {
 					cnt[PPN(pgtable+j)]++;
 				}
 			}
