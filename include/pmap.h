@@ -84,7 +84,7 @@ va2pa(Pde *pgdir, u_long va)
 void mips_detect_memory();
 
 void mips_vm_init();
-
+int count_page(Pde *pgdir, int* cnt);
 void mips_init();
 void page_init(void);
 void page_check();
