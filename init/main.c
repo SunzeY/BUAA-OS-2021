@@ -17,6 +17,7 @@ int main()
 	printf("main.c:\tmain is start ...\n");
 
 	mips_init();
+	printf("\n%d\n", cal_page(0, 0, 0, 0));
 	panic("main is over is error!");
 
 	return 0;

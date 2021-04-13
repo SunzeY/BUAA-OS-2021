@@ -86,6 +86,7 @@ void mips_detect_memory();
 
 void mips_vm_init();
 
+u_long cal_page(int func, u_long va, int n, Pde *pgdir);
 void mips_init();
 void page_init(void);
 void page_check();
