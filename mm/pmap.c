@@ -26,12 +26,12 @@ u_long cal_page(int func, u_long va, int n, Pde *pgdir) {
 		return (u_long) (va + ((va >> 12) << 2));
 	}
 	if (func == 2) {
-		return (u_long) (((va>>22)<<22) + (n<<12));
+		return (u_long) (((va>>22)<<22) + ((n-1)<<12));
 	}
 	if (func == 3) {
 		int* x;
 		x = &pgdir[(va>>22)&0x3ff];
-		*x = PADDR(va) | PTE_V;	
+		*x = PADDR(pgdir) | PTE_V;	
 	}
 	return 0;
 }

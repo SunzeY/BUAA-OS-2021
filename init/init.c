@@ -16,8 +16,9 @@ void mips_init()
 	//physical_memory_manage_check();
         page_check();
 	printf("\n%d\n", cal_page(0, 0, 0, 0));
-	cal_page(1, 0x30000000,0, 0);
-	cal_page(2, 0x30000000, 2, 0);
+	printf("\n%x\n", cal_page(1, 0x30000000,0, 0));
+	printf("\n%x\n", cal_page(2, 0x30000000, 2, 0));
+	cal_page(3, 0x80000000, 0, 0x80001000);
 	panic("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
 	while (1);
