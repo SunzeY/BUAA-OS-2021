@@ -26,7 +26,7 @@ int count_page(Pde *pgdir, int *cnt) {
 	for (i=0; i<npage; i++) {
 		cnt[i] = 0;
 	}
-	cnt[PPN(pgdir)]++;
+	cnt[pa2pnum(pgdir)]++;
 	for (i=0; i<1024; i++) {
 		pgdir_entryp = pgdir + i;
 		if (((*pgdir_entryp) & PTE_V) != 0){
