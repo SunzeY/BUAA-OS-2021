@@ -134,7 +134,7 @@ env_setup_vm(struct Env *e)
     /* Step 1: Allocate a page for the page directory
      * using a function you completed in the lab2 and add its pp_ref.
      * pgdir is the page directory of Env e, assign value for it. */
-    if ((r = page_alloc(&p) != 0)) {
+    if ((r = page_alloc(&p)) != 0) {
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
@@ -159,8 +159,9 @@ env_setup_vm(struct Env *e)
 		if(i!=PDX(UVPT))
         pgdir[i] = boot_pgdir[i];
 	}
-    //printf("finish upper!\n");
+   // printf("finish upper!\n");
     e->env_pgdir = pgdir;
+   // printf("\n>>>>>>>>>pgdir:%x\n", pgdir);
 	e->env_cr3 = PADDR(pgdir);
     //printf("finsh a\n");
     // UVPT maps the env's own page table, with read-only permission.
@@ -210,6 +211,7 @@ env_alloc(struct Env **new, u_int parent_id)
    //     return r;
    // }
    // printf(">>>>>>>>>>>>>>%x", e);
+   r = env_setup_vm(e);
 
     /*Step 3: Initialize every field of new Env with appropriate values.*/
 	e->env_id = mkenvid(e);
