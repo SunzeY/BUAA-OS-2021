@@ -166,7 +166,7 @@ env_setup_vm(struct Env *e)
     // UVPT maps the env's own page table, with read-only permission.
     e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V;
     // e->env_pgdir[PDX(VPT)] = e->env_cr3;
-    printf("ﬁnish all\n");
+    //printf("ﬁnish all\n");
     return 0;
 }
 
