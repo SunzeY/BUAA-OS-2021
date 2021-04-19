@@ -192,11 +192,9 @@ env_alloc(struct Env **new, u_int parent_id)
     struct Env *e;
 
     /*Step 1: Get a new Env from env_free_list*/
-	if(LIST_EMPTY(&env_free_list)) {
-		*new = NULL;
+	if(e = LIST_FIRST(&env_free_list)==NULL) {
 		return -E_NO_FREE_ENV;
 	}
-	e = LIST_FIRST(&env_free_list);
 
     /*Step 2: Call certain function(has been completed just now) to init kernel memory layout for this new Env.
      *The function mainly maps the kernel address to this new Env address. */
@@ -206,6 +204,7 @@ env_alloc(struct Env **new, u_int parent_id)
 	e->env_id = mkenvid(e);
 	e->env_parent_id = parent_id;
 	e->env_status = ENV_RUNNABLE;
+    e->env_runs = 0;
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
 	e->env_tf.cp0_status = 0x10001004;
@@ -213,6 +212,7 @@ env_alloc(struct Env **new, u_int parent_id)
 
     /*Step 5: Remove the new Env from env_free_list. */
     LIST_REMOVE(e, env_link);
+    *new = e;
     return 0;
 }
 
