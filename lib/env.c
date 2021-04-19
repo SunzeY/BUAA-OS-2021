@@ -257,7 +257,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     for (i = 0; i < bin_size; i += BY2PG) {
         /* Hint: You should alloc a new page. */
 	    r = page_alloc(&p);
-        if (r<0) {
+        if (r) {
             return -E_NO_MEM;
         }
         p->pp_ref++;
@@ -265,10 +265,10 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
             bcopy((void*)bin, (void*)page2kva(p)+offset, MIN(bin_size,(BY2PG-offset)));
         }
         else {
-            bcopy((void*)bin-offset+i, (void*)page2kva(p), MIN((bin_size-i), BY2PG));
+            bcopy((void*)bin-offset+i, (void*)page2kva(p), MIN((bin_size-i+offset), BY2PG));
         }
         r = page_insert(env->env_pgdir, p, va+i, PTE_V|PTE_R);
-        if (r<0) {
+        if (r) {
             return -E_NO_MEM;
         }
     }
