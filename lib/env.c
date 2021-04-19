@@ -78,7 +78,8 @@ int envid2env(u_int envid, struct Env **penv, int checkperm)
      *     or an immediate child of curenv.
      *     If not, error! */
     /*     Step 2: Make a check according to checkperm. */
-	if (checkperm && e->env_id!=curenv->env_id && e->env_parent_id!=curenv->env_id) {
+	if (checkperm && e !=curenv && e->env_parent_id!=curenv->env_id) {
+        *penv = 0;
 		return -E_BAD_ENV;
 	}
 
@@ -109,7 +110,7 @@ env_init(void)
      * should be the same as it in the envs array. */
 	for (i=NENV-1;i>=0;i--) {
 		envs[i].env_status = ENV_FREE;
-		LIST_INSERT_HEAD(&env_free_list, envs+i, env_link);
+		LIST_INSERT_HEAD(&env_free_list, &envs[i], env_link);
 	}
 
 }
@@ -133,7 +134,7 @@ env_setup_vm(struct Env *e)
      * using a function you completed in the lab2 and add its pp_ref.
      * pgdir is the page directory of Env e, assign value for it. */
 	r = page_alloc(&p);
-    if (r == -E_NO_MEM) {
+    if (r<0) {
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
@@ -160,7 +161,8 @@ env_setup_vm(struct Env *e)
 	    e->env_cr3 = PADDR(pgdir);
 
     // UVPT maps the env's own page table, with read-only permission.
-    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V;
+    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
+    e->env_pgdir[PDX(VPT)] = e->env_cr3;
 
     return 0;
 }
@@ -254,7 +256,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
             bcopy((void*)bin, (void*)page2kva(p)+offset, MIN(bin_size,(BY2PG-offset)));
         }
         else {
-            bcopy((void*)bin+offset-i, (void*)page2kva(p), MIN((bin_size-i), BY2PG));
+            bcopy((void*)bin-offset+i, (void*)page2kva(p), MIN((bin_size-i), BY2PG));
         }
         r = page_insert(env->env_pgdir, p, va+i, PTE_V|PTE_R);
         if (r<0) {
@@ -268,7 +270,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     * hint: variable `i` has the value of `bin_size` now! */
     while (i < sgsize) {
         r = page_alloc(&p);
-        if (r == -E_NO_MEM) {
+        if (r<0) {
             return -E_NO_MEM;
         }
         p->pp_ref++;
@@ -276,7 +278,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
         if (r<0) {
             return -E_NO_MEM;
         }
-        bzero((void*)page2kva(p), MIN(BY2PG, (sgsize-i)));
+        //bzero((void*)page2kva(p), MIN(BY2PG, (sgsize-i)));
         i += BY2PG;
     }
     return 0;
