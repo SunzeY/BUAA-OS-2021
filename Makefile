@@ -21,7 +21,7 @@ objects		  := $(boot_dir)/start.o			  \
 				 $(lib_dir)/*.o				  \
 				 $(mm_dir)/*.o
 
-.PHONY: all $(modules) clean
+.PHONY: all $(modules) clean test
 
 all: $(modules) vmlinux
 
@@ -38,4 +38,6 @@ clean:
 		done; \
 	rm -rf *.o *~ $(vmlinux_elf)
 
+test:
+    
 include include.mk
