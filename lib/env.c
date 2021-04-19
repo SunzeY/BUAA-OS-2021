@@ -279,12 +279,12 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     * hint: variable `i` has the value of `bin_size` now! */
     while (i < sgsize) {
         r = page_alloc(&p);
-        if (r<0) {
+        if (r) {
             return -E_NO_MEM;
         }
-        p->pp_ref++;
+        //p->pp_ref++;
         r = page_insert(env->env_pgdir, p, va+i, PTE_V|PTE_R);
-        if (r<0) {
+        if (r) {
             return -E_NO_MEM;
         }
         //bzero((void*)page2kva(p), MIN(BY2PG, (sgsize-i)));
@@ -321,7 +321,7 @@ load_icode(struct Env *e, u_char *binary, u_int size)
 
     /*Step 1: alloc a page. */
     r = page_alloc(&p);
-    if (r!=0) {
+    if (r) {
         return;
     }
 
@@ -356,7 +356,7 @@ env_create_priority(u_char *binary, int size, int priority)
 {
         struct Env *e;
     /*Step 1: Use env_alloc to alloc a new env. */
-    if(env_alloc(&e, 0)<0) {
+    if(env_alloc(&e, 0)) {
         return;
     }
     /*Step 2: assign priority to the new env. */
@@ -470,10 +470,11 @@ env_run(struct Env *e)
     }
     /*Step 2: Set 'curenv' to the new environment. */
     curenv = e;
-    curenv->env_runs++;
+    //curenv->env_runs++;
 
     /*Step 3: Use lcontext() to switch to its address space. */
-    lcontext(KADDR(curenv->env_cr3));
+    //lcontext(KADDR(curenv->env_cr3));
+    lcontext(e->env_pgdir);
 
     /*Step 4: Use env_pop_tf() to restore the environment's
      * environment   registers and return to user mode.
@@ -481,7 +482,7 @@ env_run(struct Env *e)
      * Hint: You should use GET_ENV_ASID there. Think why?
      * (read <see mips run linux>, page 135-144)
      */
-    env_pop_tf(&(curenv->env_tf), GET_ENV_ASID(curenv->env_id));
+    env_pop_tf(&(e->env_tf), GET_ENV_ASID(curenv->env_id));
 }
 void env_check()
 {
