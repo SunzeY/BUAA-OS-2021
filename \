@@ -102,8 +102,7 @@ env_init(void)
     int i;
     /*Step 1: Initial env_free_list. */
 	LIST_INIT(&env_free_list);
-    LIST_INIT(&env_sched_list[0]);
-    LIST_INIT(&env_sched_list[1]);
+
     /*Step 2: Traverse the elements of 'envs' array,
      * set their status as free and insert them into the env_free_list.
      * Choose the correct loop order to finish the insertion.
@@ -134,19 +133,24 @@ env_setup_vm(struct Env *e)
     /* Step 1: Allocate a page for the page directory
      * using a function you completed in the lab2 and add its pp_ref.
      * pgdir is the page directory of Env e, assign value for it. */
-    if ((r = page_alloc(&p) != 0)) {
+    printf("%x\n", p);
+    printf("goto_page_alloc\n");
+	r = page_alloc(&p);
+    printf("pagealloc finish!\n");
+    printf("p is alloc with %x\n\n", p);
+    if (r<0) {
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
-    // printf(">>>>>>>>>>>>>r=%d\n",r);
 	p->pp_ref++;
-    //printf("%d\n", p->pp_ref);
+    printf("%d\n", p->pp_ref);
 	pgdir = (Pde*)page2kva(p);
 
     /*Step 2: Zero pgdir's field before UTOP. */
-    for(i=0;i<PDX(UTOP);++i) pgdir[i] = 0;
-
-    //printf("finsh UTOP!\n");
+	for (i=0; i<PDX(UTOP); i++) {
+		pgdir[i] = 0;
+	}
+    printf("finsh UTOP!\n");
     /*Step 3: Copy kernel's boot_pgdir to pgdir. */
 
     /* Hint:
@@ -155,18 +159,17 @@ env_setup_vm(struct Env *e)
      *  See ./include/mmu.h for layout.
      *  Can you use boot_pgdir as a template?
      */
-	for (i=PDX(UTOP);i<PTE2PT;++i) {
-		if(i!=PDX(UVPT))
-        pgdir[i] = boot_pgdir[i];
+	for (i=PDX(UTOP);i<= PDX(~0);i++) {
+		pgdir[i] = boot_pgdir[i];
 	}
-    //printf("finish upper!\n");
-    e->env_pgdir = pgdir;
-	e->env_cr3 = PADDR(pgdir);
-    //printf("finsh a\n");
+    printf("finish upper!\n");
+	    e->env_pgdir = pgdir;
+	    e->env_cr3 = PADDR(pgdir);
+
     // UVPT maps the env's own page table, with read-only permission.
-    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V;
-    // e->env_pgdir[PDX(VPT)] = e->env_cr3;
-    printf("ﬁnish all\n");
+    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
+    e->env_pgdir[PDX(VPT)] = e->env_cr3;
+
     return 0;
 }
 
@@ -197,19 +200,18 @@ env_alloc(struct Env **new, u_int parent_id)
     struct Env *e;
 
     /*Step 1: Get a new Env from env_free_list*/
-//	if(e = LIST_FIRST(&env_free_list)==NULL) 
- //   {   
-  //      *new = NULL;
-//		return -E_NO_FREE_ENV;
-//	}
-    if(LIST_EMPTY(&env_free_list)) return *new = NULL, -E_NO_FREE_ENV;
-    e = LIST_FIRST(&env_free_list);
+	if(e = LIST_FIRST(&env_free_list)==NULL) 
+    {   
+        *new = NULL;
+		return -E_NO_FREE_ENV;
+	}
+
     /*Step 2: Call certain function(has been completed just now) to init kernel memory layout for this new Env.
      *The function mainly maps the kernel address to this new Env address. */
-//	if((r = env_setup_vm(e)<0)) {
-   //     return r;
-   // }
-   // printf(">>>>>>>>>>>>>>%x", e);
+	if((r = env_setup_vm(e)<0)) {
+        return r;
+    }
+    printf("%x", e);
 
     /*Step 3: Initialize every field of new Env with appropriate values.*/
 	e->env_id = mkenvid(e);
@@ -321,7 +323,7 @@ load_icode(struct Env *e, u_char *binary, u_int size)
 
     /*Step 1: alloc a page. */
     r = page_alloc(&p);
-    if (r!=0) {
+    if (r<0) {
         return;
     }
 
