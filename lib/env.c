@@ -41,9 +41,8 @@ u_int mkenvid(struct Env *e)
 }
 
 u_int fork(struct Env *e) {
-  
+    return 0;
     if(LIST_EMPTY(&env_free_list)){
-        e = NULL;
         return -1;
     }
     e = LIST_FIRST(&env_free_list);
