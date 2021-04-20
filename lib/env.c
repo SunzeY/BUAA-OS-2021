@@ -54,16 +54,22 @@ u_int fork(struct Env *e) {
     fo->env_parent_id = e -> env_id;
     fo->env_id = mkenvid(fo);
     e->childs[e->curent_i] = fo->env_id;
+    //printf("%08x env append child %08x\n", e->env_id, fo->env_id);
     e->curent_i += 1;
     return fo->env_id;
 }
 
 int lab3_get_sum(u_int env_id) {
+    return 0;
     int sum = 0;
     int k = 0;
     struct Env* c;
-    if (envid2env(env_id, &c, 0)){
-        for (k=0; k<c->curent_i; k++) {
+    printf("3in2:c with index:");
+    lab3_output(env_id);
+    if (envid2env(env_id, &c, 0)==0){
+        for (k=0; k<c->curent_i; k++) 
+        {   
+            if (c->childs[k]!=0)
             sum += lab3_get_sum(c->childs[k]);
         }
     }

@@ -12,10 +12,30 @@ void mips_init()
 	
 	mips_vm_init();
 	page_init();
-	
 	env_init();
 	env_check();
-
+    struct Env* a;
+    struct Env* b1e;
+    struct Env* b2e;
+    env_alloc(&a, 0);
+    printf("^^^^finsh alloc\n");
+    u_int b1 = fork(a);
+    printf("^^^^finsh fork a\n");
+    u_int b2 = fork(a);
+    envid2env(b1, &b1e, 0);
+    printf("^^finsh trans\n");
+    fork(b1e);
+    b2 = fork(b1e);
+    envid2env(b2, &b2e, 0);
+    lab3_output(b1);
+    fork(b2e);
+    lab3_output(a->env_id);
+    printf("start 3^^^\n");
+    printf(lab3_get_sum(b1));
+    lab3_output(b1e);
+    
+	while(1);
+	panic("init.c:\tend of mips_init() reached!");
 	/*you can create some processes(env) here. in terms of binary code, please refer current directory/code_a.c
 	 * code_b.c*/
     /*** exercise 3.9 ***/
