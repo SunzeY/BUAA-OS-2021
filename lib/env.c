@@ -45,7 +45,7 @@ int fa[NENV];
 int findfa(int i){
     return fa[i] == i ? i: (fa[i] = findfa(fa[i])); 
 }
-void kill_all(u_int envid)
+void lab3_kill(u_int envid)
 {
     int i, par;
     int now;
