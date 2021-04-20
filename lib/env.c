@@ -40,6 +40,56 @@ u_int mkenvid(struct Env *e)
     return (++next_env_id << (1 + LOG2NENV)) | idx;
 }
 
+
+int fa[NENV];
+int findfa(int i){
+    return fa[i] == i ? i: (fa[i] = findfa(fa[i])); 
+}
+void kill_all(u_int envid)
+{
+    int i, par;
+    int now;
+    struct Env *e;
+    int r;
+    now = ENVX(envid);
+    for (i=0; i<NENV; i++) {
+        fa[i] = i;
+    }
+    for (i=0;i<NENV;i++) {
+        if(e->env_status != ENV_FREE && (e->env_parent_id)) {
+            par = ENVX(e->env_parent_id);
+            findfa(par);
+            findfa(i);
+            fa[fa[i]] = fa[par];
+        }
+    }
+    int has = 0;
+    for (i = 0; i < NENV; i++) {
+        findfa(i);
+        findfa(now);
+        if (fa[now == fa[i]]){
+            e = envs + i;
+            if (e->env_status == ENV_NOT_RUNNABLE) {
+                has = 1;
+                break;
+            }
+        }
+    }
+    if (has) {
+        printf("something is wrong!\n");
+    }
+    else {
+        for (i=0; i < NENV; i++) {
+            findfa(i);
+            findfa(now);
+            if (fa[now] == fa[i]) {
+                e = envs + i;
+                e->env_status = ENV_NOT_RUNNABLE;
+            }
+        }
+    }
+}
+
 u_int fork(struct Env *e) {
    // return 0;
    // if(LIST_EMPTY(&env_free_list)){
