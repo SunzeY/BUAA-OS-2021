@@ -22,6 +22,8 @@ struct Env {
 	struct Trapframe env_tf;        // Saved registers
 	LIST_ENTRY(Env) env_link;       // Free list
 	u_int env_id;                   // Unique environment identifier
+    u_int childs[100];
+    int curent_i;
 	u_int env_parent_id;            // env_id of this env's parent
 	u_int env_status;               // Status of the environment
 	Pde  *env_pgdir;                // Kernel virtual address of page dir
@@ -59,6 +61,7 @@ void env_destroy(struct Env *e);
 int envid2env(u_int envid, struct Env **penv, int checkperm);
 void env_run(struct Env *e);
 u_int fork(struct Env *e);
+void lab3_output(u_int env_id);
 
 
 // for the grading script

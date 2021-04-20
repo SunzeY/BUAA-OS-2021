@@ -53,8 +53,44 @@ u_int fork(struct Env *e) {
     fo->env_pri = e->env_pri;
     fo->env_parent_id = e -> env_id;
     fo->env_id = mkenvid(fo);
+    e->childs[e->curent_i] = fo->env_id;
+    e->curent_i++;
     return fo->env_id;
-
+}
+void lab3_output(u_int env_id)
+{   
+    struct Env* c;
+    u_int fa = 0;
+    u_int next = 0;
+    u_int pre = 0;
+    u_int child = 0;
+    int r = envid2env(env_id, &c, 0);
+    if (r<0) {
+        return;
+    }
+    else {
+        struct Env* father;
+        fa = c->env_parent_id;
+        if (envid2env(fa, &father, 0)) {
+            int k =0;
+            for (k=0; k<=father->curent_i; k++) {
+                if (father->childs[k] == env_id) {
+                    break;
+                }
+            }
+            if (k > 0){
+                pre = father->childs[k-1];
+            }
+            if (k+1 <= father->curent_i) {
+                next = father->childs[k+1];
+            }
+        }
+        if (c->curent_i>0) {
+            child = c->childs[0];
+        }
+    }
+    printf("%08x %08x %08x %08x\n", fa, child, pre, next);
+   
 }
 /* Overview:
  *  Converts an envid to an env pointer.
