@@ -41,15 +41,19 @@ u_int mkenvid(struct Env *e)
 }
 
 u_int fork(struct Env *e) {
-    return 0;
-    if(LIST_EMPTY(&env_free_list)){
-        return -1;
-    }
-    e = LIST_FIRST(&env_free_list);
-    LIST_REMOVE(e, env_link);
-    e->env_parent_id = e -> env_id;
-    e->env_id = mkenvid(e);
-    return e->env_id;
+   // return 0;
+   // if(LIST_EMPTY(&env_free_list)){
+       // return -1;
+   // }
+    struct Env* fo = LIST_FIRST(&env_free_list);
+    LIST_REMOVE(fo, env_link);
+    fo->env_status = e->env_status;
+    fo->env_pgdir = e->env_pgdir;
+    fo->env_cr3 = e->env_cr3;
+    fo->env_pri = e->env_pri;
+    fo->env_parent_id = e -> env_id;
+    fo->env_id = mkenvid(fo);
+    return fo->env_id;
 
 }
 /* Overview:
