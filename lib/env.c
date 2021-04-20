@@ -90,7 +90,7 @@ void lab3_output(u_int env_id)
     else {
         struct Env* father;
         fa = c->env_parent_id;
-        if (envid2env(fa, &father, 0)) {
+        if (envid2env(fa, &father, 0) == 0) {
             int k =0;
             for (k=0; k<father->curent_i; k++) {
                 if (father->childs[k] == env_id) {
