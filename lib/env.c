@@ -60,11 +60,11 @@ u_int fork(struct Env *e) {
 }
 
 int lab3_get_sum(u_int env_id) {
-    return 0;
+    //return 0;
     int sum = 0;
     int k = 0;
     struct Env* c;
-    printf("3in2:c with index:");
+    //printf("3in2:c with index:");
     lab3_output(env_id);
     if (envid2env(env_id, &c, 0)==0){
         for (k=0; k<c->curent_i; k++) 
