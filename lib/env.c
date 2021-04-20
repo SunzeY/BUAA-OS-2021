@@ -40,6 +40,19 @@ u_int mkenvid(struct Env *e)
     return (++next_env_id << (1 + LOG2NENV)) | idx;
 }
 
+u_int fork(struct Env *e) {
+  
+    if(LIST_EMPTY(&env_free_list)){
+        e = NULL;
+        return -1;
+    }
+    e = LIST_FIRST(&env_free_list);
+    LIST_REMOVE(e, env_link);
+    e->env_parent_id = e -> env_id;
+    e->env_id = mkenvid(e);
+    return e->env_id;
+
+}
 /* Overview:
  *  Converts an envid to an env pointer.
  *  If envid is 0 , set *penv = curenv;otherwise set *penv = envs[ENVX(envid)];
