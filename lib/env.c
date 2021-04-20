@@ -57,6 +57,19 @@ u_int fork(struct Env *e) {
     e->curent_i += 1;
     return fo->env_id;
 }
+
+int lab3_get_sum(u_int env_id) {
+    int sum = 0;
+    int k = 0;
+    struct Env* c;
+    if (envid2env(env_id, &c, 0)){
+        for (k=0; k<c->curent_i; k++) {
+            sum += lab3_get_sum(c->childs[k]);
+        }
+    }
+    return sum;
+}
+
 void lab3_output(u_int env_id)
 {   
     struct Env* c;
