@@ -225,6 +225,7 @@ env_alloc(struct Env **new, u_int parent_id)
 
     /*Step 5: Remove the new Env from env_free_list. */
     LIST_REMOVE(e, env_link);
+    LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
     *new = e;
     return 0;
 }
@@ -368,7 +369,7 @@ env_create_priority(u_char *binary, int size, int priority)
     load_icode(e, binary, size);
 
     /*Step 4: add e to schequeue. */
-    LIST_INSERT_TAIL(&env_sched_list[0], e, env_sched_link);
+    //LIST_INSERT_TAIL(&env_sched_list[0], e, env_sched_link);
 }
 /* Overview:
  * Allocates a new env with default priority value.
