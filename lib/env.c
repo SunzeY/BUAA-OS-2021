@@ -102,8 +102,8 @@ env_init(void)
     int i;
     /*Step 1: Initial env_free_list. */
 	LIST_INIT(&env_free_list);
-    //LIST_INIT(&env_sched_list[0]);
-    //LIST_INIT(&env_sched_list[1]);
+    LIST_INIT(&env_sched_list[0]);
+    LIST_INIT(&env_sched_list[1]);
     /*Step 2: Traverse the elements of 'envs' array,
      * set their status as free and insert them into the env_free_list.
      * Choose the correct loop order to finish the insertion.
@@ -366,6 +366,9 @@ env_create_priority(u_char *binary, int size, int priority)
     /*Step 3: Use load_icode() to load the named elf binary,
       and insert it into env_sched_list using LIST_INSERT_HEAD. */
     load_icode(e, binary, size);
+
+    /*Step 4: add e to schequeue. */
+    LIST_INSERT_TAIL(&env_sched_list[0], e, env_sched_link);
 }
 /* Overview:
  * Allocates a new env with default priority value.
