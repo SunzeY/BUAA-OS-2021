@@ -61,16 +61,16 @@ u_int fork(struct Env *e) {
 
 int lab3_get_sum(u_int env_id) {
     //return 0;
-    int sum = 0;
+    int sum = 1;
     int k = 0;
     struct Env* c;
     //printf("3in2:c with index:");
     lab3_output(env_id);
-    if (envid2env(env_id, &c, 0)==0){
+    if (env_id != 0 && envid2env(env_id, &c, 0)==0 && c->env_id!=env_id && c!= 0){
         for (k=0; k<c->curent_i; k++) 
-        {   
-            if (c->childs[k]!=0)
-            sum += lab3_get_sum(c->childs[k]);
+        {  
+            if (c->childs[k]!=0 && env_id != c->childs[k]) 
+                sum += lab3_get_sum(c->childs[k]);
         }
     }
     return sum;
@@ -90,7 +90,7 @@ void lab3_output(u_int env_id)
     else {
         struct Env* father;
         fa = c->env_parent_id;
-        if (fa != 0 && envid2env(fa, &father, 0) == 0 && fa != env_id) {
+        if (fa!=0 && envid2env(fa, &father, 0) == 0 && fa != env_id && fa != 0) {
             int k =0;
             for (k=0; k<father->curent_i; k++) {
                 if (father->childs[k] == env_id) {
