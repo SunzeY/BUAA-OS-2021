@@ -165,8 +165,8 @@ env_setup_vm(struct Env *e)
 	e->env_cr3 = PADDR(pgdir);
     //printf("finsh a\n");
     // UVPT maps the env's own page table, with read-only permission.
-    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V;
-    // e->env_pgdir[PDX(VPT)] = e->env_cr3;
+    e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
+    e->env_pgdir[PDX(VPT)] = e->env_cr3;
     //printf("ﬁnish all\n");
     return 0;
 }
@@ -211,12 +211,12 @@ env_alloc(struct Env **new, u_int parent_id)
    //     return r;
    // }
    // printf(">>>>>>>>>>>>>>%x", e);
-   r = env_setup_vm(e);
+   env_setup_vm(e);
 
     /*Step 3: Initialize every field of new Env with appropriate values.*/
 	e->env_id = mkenvid(e);
 	e->env_parent_id = parent_id;
-	e->env_status = ENV_RUNNABLE;
+	//e->env_status = ENV_RUNNABLE;
     e->env_runs = 0;
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
@@ -252,46 +252,54 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
 {
     struct Env *env = (struct Env *)user_data;
     struct Page *p = NULL;
-    u_long i;
+    u_long i = 0;
     int r;
     u_long offset = va - ROUNDDOWN(va, BY2PG);
+    int size;
+    if (offset) {
+        p = page_lookup(env->env_pgdir, va+i, NULL);
+        if(p==0) {
+            r = page_alloc(&p);
+            if (r!=0) return r;
+            page_insert(env->env_pgdir, p, va+i, PTE_R);
+        }
+        size = MIN(bin_size - i, BY2PG - offset);
+        bcopy((void*)bin, (void*)(page2kva(p)+offset), size);
+        i = i + size;
+    }
 
     /*Step 1: load all content of bin into memory. */
-    for (i = 0; i < bin_size; i += BY2PG) {
-        /* Hint: You should alloc a new page. */
-	    r = page_alloc(&p);
-        if (r) {
-            return -E_NO_MEM;
-        }
-        p->pp_ref++;
-        if (i==0) {
-            bcopy((void*)bin, (void*)page2kva(p)+offset, MIN(bin_size,(BY2PG-offset)));
-        }
-        else {
-            bcopy((void*)bin-offset+i, (void*)page2kva(p), MIN((bin_size-i+offset), BY2PG));
-        }
-        r = page_insert(env->env_pgdir, p, va+i, PTE_V|PTE_R);
-        if (r!=0) {
-            return -E_NO_MEM;
-        }
+    while (i < bin_size) {
+        size = MIN(BY2PG, bin_size - i);
+        r = page_alloc(&p);
+        if(r!=0) return r;
+        page_insert(env->env_pgdir, p, va+i, PTE_R);
+        bcopy((void*)bin+i, (void*)(page2kva(p)), size);
+        i += size;
     }
-                
-
-        
+               
     /*Step 2: alloc pages to reach `sgsize` when `bin_size` < `sgsize`.
     * hint: variable `i` has the value of `bin_size` now! */
+    offset = va + i - ROUNDDOWN(va+i, BY2PG);
+    if (offset) {
+        p = page_lookup(env->env_pgdir, va+i, NULL);
+        if(p==0) {
+            r = page_alloc(&p);
+            if (r!=0) return r;
+            page_insert(env->env_pgdir, p, va+i, PTE_R);
+        }
+        size = MIN(sgsize - i, BY2PG - offset);
+        bzero((void*)(page2kva(p)+offset), size);
+        i = i + size;
+    }
     while (i < sgsize) {
+        size = MIN(BY2PG, sgsize - i);
         r = page_alloc(&p);
-        if (r!=0) {
-            return -E_NO_MEM;
-        }
+        if (r!=0) return -E_NO_MEM;
         //p->pp_ref++;
-        r = page_insert(env->env_pgdir, p, va+i, PTE_V|PTE_R);
-        if (r) {
-            return -E_NO_MEM;
-        }
-        //bzero((void*)page2kva(p), MIN(BY2PG, (sgsize-i)));
-        i += BY2PG;
+        page_insert(env->env_pgdir, p, va+i, PTE_R);
+        bzero((void*)page2kva(p), size);
+        i += size;
     }
     return 0;
 }
@@ -335,10 +343,7 @@ load_icode(struct Env *e, u_char *binary, u_int size)
     page_insert(e->env_pgdir, p, USTACKTOP-BY2PG, perm);
 
     /*Step 3:load the binary using elf loader. */
-    r = load_elf(binary, size, &entry_point, e, load_icode_mapper);
-    if (r<0) {
-        return;
-    }
+    load_elf(binary, size, &entry_point,(void*)e, load_icode_mapper);
     e->env_status = ENV_RUNNABLE;
     LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
     /*Step 4:Set CPU's PC register as appropriate value. */
@@ -472,9 +477,13 @@ env_run(struct Env *e)
     *  switch the context and save the registers. You can imitate env_destroy() 's behaviors.*/
     //struct Trapframe *old = (struct Trapframe*) (TIMESTACK - sizeof(struct Trapframe));
     if(curenv) {
-        //bcopy(old, &(curenv->env_tf), sizeof(struct Trapframe));
-        curenv->env_tf = *((struct Trapframe*)(TIMESTACK - sizeof(struct Trapframe)));
-        curenv->env_tf.pc = e->env_tf.cp0_epc;
+       // printf("old env to be replaced with pri %d\n", curenv->env_pri);
+        struct Trapframe *old;
+        old = (struct Trapframe*) (TIMESTACK - sizeof(struct Trapframe));
+        bcopy(old, &(curenv->env_tf), sizeof(struct Trapframe));
+        //curenv->env_tf = *((struct Trapframe*)(TIMESTACK - sizeof(struct Trapframe)));
+        curenv->env_tf.pc = curenv->env_tf.cp0_epc;
+        //printf("epc_to_be_set:%x\n", e->env_tf.cp0_epc);
     }
     /*Step 2: Set 'curenv' to the new environment. */
     curenv = e;
@@ -482,7 +491,7 @@ env_run(struct Env *e)
 
     /*Step 3: Use lcontext() to switch to its address space. */
     //lcontext(KADDR(curenv->env_cr3));
-    lcontext((u_int)curenv->env_pgdir);
+    lcontext((u_int)(curenv->env_pgdir));
 
     /*Step 4: Use env_pop_tf() to restore the environment's
      * environment   registers and return to user mode.
@@ -492,6 +501,7 @@ env_run(struct Env *e)
      */
     env_pop_tf(&(curenv->env_tf), GET_ENV_ASID(curenv->env_id));
 }
+
 void env_check()
 {
         struct Env *temp, *pe, *pe0, *pe1, *pe2;
