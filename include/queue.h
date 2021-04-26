@@ -152,24 +152,18 @@
  * The "field" name is the link element as above. You can refer to LIST_INSERT_HEAD.
  * Note: this function has big differences with LIST_INSERT_HEAD !
  */
-#define LIST_INSERT_TAIL(head, elm, field) do {                                                     \
-		if (LIST_FIRST(head)!=NULL) {                                                       \
-			LIST_NEXT((elm), field) = LIST_FIRST(head);                                 \
-			while (LIST_NEXT(LIST_NEXT((elm), field), field)!=NULL) {                   \
-				LIST_NEXT((elm), field) = LIST_NEXT(LIST_NEXT((elm), field), field);\
-			}                                                                           \
-			(elm)->field.le_prev = &LIST_NEXT((elm), field);                            \
-			LIST_NEXT(LIST_NEXT((elm), field), field) = (elm);                          \
-			LIST_NEXT((elm), field) = NULL;                                             \
-  		}                                                                                   \
-		else {                                                                              \
-			LIST_FIRST(head) = (elm);                                                   \
-			(elm)->field.le_prev = &(LIST_FIRST(head));	                            \
-		}                                                                                   \
-	} while (0)
-/* finish your code here. */
-
-
+#define LIST_INSERT_TAIL(head, elm, field) do {       \                          
+    if (LIST_FIRST(head) == NULL) \
+        LIST_INSERT_HEAD(head, elm, field); \
+    else { \
+        LIST_FOREACH(LIST_NEXT(elm, field), head, field) {\
+            if(LIST_NEXT(elm, field)->field.le_next == NULL) \
+                break;} \
+        LIST_NEXT(elm, field)->field.le_next = (elm); \
+        (elm)->field.le_prev = &LIST_NEXT(LIST_NEXT(elm, field), field); \
+        LIST_NEXT(elm, field) = NULL;\
+    } \
+} while (0)
 #define LIST_NEXT(elm, field)   ((elm)->field.le_next)
 
 /*

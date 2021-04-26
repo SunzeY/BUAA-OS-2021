@@ -225,7 +225,7 @@ env_alloc(struct Env **new, u_int parent_id)
 
     /*Step 5: Remove the new Env from env_free_list. */
     LIST_REMOVE(e, env_link);
-    LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
+    //LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
     *new = e;
     return 0;
 }
@@ -271,7 +271,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
             bcopy((void*)bin-offset+i, (void*)page2kva(p), MIN((bin_size-i+offset), BY2PG));
         }
         r = page_insert(env->env_pgdir, p, va+i, PTE_V|PTE_R);
-        if (r) {
+        if (r!=0) {
             return -E_NO_MEM;
         }
     }
@@ -282,7 +282,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     * hint: variable `i` has the value of `bin_size` now! */
     while (i < sgsize) {
         r = page_alloc(&p);
-        if (r) {
+        if (r!=0) {
             return -E_NO_MEM;
         }
         //p->pp_ref++;
@@ -339,7 +339,8 @@ load_icode(struct Env *e, u_char *binary, u_int size)
     if (r<0) {
         return;
     }
-
+    e->env_status = ENV_RUNNABLE;
+    LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
     /*Step 4:Set CPU's PC register as appropriate value. */
     e->env_tf.pc = entry_point;
 }
@@ -469,18 +470,19 @@ env_run(struct Env *e)
     /*Step 1: save register state of curenv. */
     /* Hint: if there is an environment running, you should do
     *  switch the context and save the registers. You can imitate env_destroy() 's behaviors.*/
-    struct Trapframe *old = (struct Trapframe*) (TIMESTACK - sizeof(struct Trapframe));
+    //struct Trapframe *old = (struct Trapframe*) (TIMESTACK - sizeof(struct Trapframe));
     if(curenv) {
-        bcopy(old, &(curenv->env_tf), sizeof(struct Trapframe));
+        //bcopy(old, &(curenv->env_tf), sizeof(struct Trapframe));
+        curenv->env_tf = *((struct Trapframe*)(TIMESTACK - sizeof(struct Trapframe)));
         curenv->env_tf.pc = e->env_tf.cp0_epc;
     }
     /*Step 2: Set 'curenv' to the new environment. */
     curenv = e;
-    //curenv->env_runs++;
+    curenv->env_runs++;
 
     /*Step 3: Use lcontext() to switch to its address space. */
     //lcontext(KADDR(curenv->env_cr3));
-    lcontext(e->env_pgdir);
+    lcontext((u_int)curenv->env_pgdir);
 
     /*Step 4: Use env_pop_tf() to restore the environment's
      * environment   registers and return to user mode.
@@ -488,7 +490,7 @@ env_run(struct Env *e)
      * Hint: You should use GET_ENV_ASID there. Think why?
      * (read <see mips run linux>, page 135-144)
      */
-    env_pop_tf(&(e->env_tf), GET_ENV_ASID(curenv->env_id));
+    env_pop_tf(&(curenv->env_tf), GET_ENV_ASID(curenv->env_id));
 }
 void env_check()
 {
