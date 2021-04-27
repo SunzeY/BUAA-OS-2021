@@ -33,7 +33,9 @@ void sched_yield(void)
      *  functions or macros below may be used (not all):
      *  LIST_INSERT_TAIL, LIST_REMOVE, LIST_FIRST, LIST_EMPTY
      */
-     e = curenv;
+
+     // method 1 loop;
+     /*e = curenv;
      if(count==0 || e == NULL || e->env_status == ENV_NOT_RUNNABLE) {
         do {
             e = LIST_FIRST(&env_sched_list[point]);
@@ -53,10 +55,35 @@ void sched_yield(void)
         } while (e == NULL || e->env_status == ENV_NOT_RUNNABLE);
      }
      count--;
+     env_run(e);*/
+    
+    //method 2 run curenv;
+     count--;
+     if (count <= 0 || curenv == NULL) {
+        if (curenv != NULL) {
+            //curenv->env_pri--;
+            //if (curenv->env_pri == 0) {
+            //    env_destroy(curenv);
+            //    panic("sched_yield_new use env_destroy and returned!\n");
+            //}
+            LIST_INSERT_HEAD(&env_sched_list[!point], curenv, env_sched_link);
+        }
+        if (LIST_EMPTY(&env_sched_list[point])) {
+            point = 1 - point;
+        }
+        if (LIST_EMPTY(&env_sched_list[point])) {
+            panic("^^^^No env is RUNNABLE!^^^^\n");
+        }
+        e = LIST_FIRST(&env_sched_list[point]);
+        LIST_REMOVE(e, env_sched_link);
+        count = e->env_pri;
+        env_run(e);
+     }
      //if (e!=NULL) {
      //   printf("\npri:%d\n", e->env_pri);
      //   printf("pointer:%x\n", e);
      //   printf("status:%d\n", e->env_status);
      //}
-     env_run(e);
+     env_run(curenv);
+     panic("^^^^sched_yield func reach end!^^^^\n");
 }
