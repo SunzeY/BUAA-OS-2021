@@ -62,18 +62,20 @@ void sched_yield(void)
     
     //method 2 run curenv;
      count--;
+     int_cnt++;
      if (curenv != NULL) {
         if(FUNC1(curenv)!=0) {
             int a = PRI(curenv);
             a = ((a-FUNC1(curenv))<0) ? 0 : (a-FUNC1(curenv));
             curenv->env_pri = ((curenv->env_pri)&0xffffff00) | a;
         }
-        int_cnt += 1;
         if(FUNC2(curenv) == int_cnt) {
+            //printf("\nnum of cnt is %d : A.status is %d\n", int_cnt, curenv->env_status);
             LIST_REMOVE(curenv, env_sched_link);
             curenv->reset = FUNC3(curenv) + 1;
             curenv->env_status = ENV_NOT_RUNNABLE;
             LIST_INSERT_HEAD(&env_sched_list[1], curenv, env_sched_link);
+
             curenv = NULL;
         }
      }
@@ -84,6 +86,8 @@ void sched_yield(void)
         }
         if (e->reset == 0) {
             e->env_status = ENV_RUNNABLE;
+            LIST_REMOVE(e, env_sched_link);
+            //printf("\nnum of cnt is %d : A.status is %d\n", int_cnt, e->env_status);
             LIST_INSERT_TAIL(&env_sched_list[0], e, env_sched_link);
         }
      }

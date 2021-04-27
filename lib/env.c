@@ -369,6 +369,9 @@ env_create_priority(u_char *binary, int size, int priority)
         return;
     }
     /*Step 2: assign priority to the new env. */
+    //if (priority == 2) {
+    //    priority = 0x03020002;
+    //}
     e->env_pri = priority;
     /*Step 3: Use load_icode() to load the named elf binary,
       and insert it into env_sched_list using LIST_INSERT_HEAD. */
