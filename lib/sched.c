@@ -3,6 +3,8 @@
 #include <printf.h>
 #define PRI(x) (((x)->env_pri)&0xff)
 #define FUNC1(X) ((((X)->env_pri)&0xff00)>>8)
+#define FUNC2(X) ((((X)->env_pri)&0xff0000)>>16)
+#define FUNC3(X) ((((X)->env_pri))>>24)
 /* Overview:
  *  Implement simple round-robin scheduling.
  *
@@ -21,7 +23,7 @@ void sched_yield(void)
     //return;
     static int count = 0; // remaining time slices of current env
     static int point = 0; // current env_sched_list index
-    
+    static int int_cnt = 0; 
      /*  hint:
      *  1. if (count==0), insert `e` into `env_sched_list[1-point]`
      *     using LIST_REMOVE and LIST_INSERT_TAIL.
@@ -65,6 +67,23 @@ void sched_yield(void)
             int a = PRI(curenv);
             a = ((a-FUNC1(curenv))<0) ? 0 : (a-FUNC1(curenv));
             curenv->env_pri = ((curenv->env_pri)&0xffffff00) | a;
+        }
+        int_cnt += 1;
+        if(FUNC2(curenv) == int_cnt) {
+            LIST_REMOVE(curenv, env_sched_link);
+            curenv->reset = FUNC3(curenv);
+            curenv->env_status = ENV_NOT_RUNNABLE;
+            LIST_INSERT_HEAD(&env_sched_list[1], curenv, env_sched_link);
+            curenv = NULL;
+        }
+     }
+     LIST_FOREACH(e, &env_sched_list[1], env_sched_link) {
+        if (e->reset > 0) {
+            e->reset--;
+        }
+        if (e->reset == 0) {
+            e->env_status = ENV_RUNNABLE;
+            LIST_INSERT_TAIL(&env_sched_list[0], e, env_sched_link);
         }
      }
      if (count <= 0 || curenv == NULL) {

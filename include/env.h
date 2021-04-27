@@ -19,6 +19,7 @@
 #define ENV_NOT_RUNNABLE	2
 
 struct Env {
+    int reset;
 	struct Trapframe env_tf;        // Saved registers
 	LIST_ENTRY(Env) env_link;       // Free list
 	u_int env_id;                   // Unique environment identifier
