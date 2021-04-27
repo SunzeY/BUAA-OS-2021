@@ -64,7 +64,7 @@ void sched_yield(void)
         if(FUNC1(curenv)!=0) {
             int a = PRI(curenv);
             a = ((a-FUNC1(curenv))<0) ? 0 : (a-FUNC1(curenv));
-            curenv->env_pri = ((curenv->env_pri)&0xfff0) | a;
+            curenv->env_pri = ((curenv->env_pri)&0xffffff00) | a;
         }
      }
      if (count <= 0 || curenv == NULL) {
