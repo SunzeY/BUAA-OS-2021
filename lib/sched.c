@@ -71,13 +71,14 @@ void sched_yield(void)
         int_cnt += 1;
         if(FUNC2(curenv) == int_cnt) {
             LIST_REMOVE(curenv, env_sched_link);
-            curenv->reset = FUNC3(curenv);
+            curenv->reset = FUNC3(curenv) + 1;
             curenv->env_status = ENV_NOT_RUNNABLE;
             LIST_INSERT_HEAD(&env_sched_list[1], curenv, env_sched_link);
             curenv = NULL;
         }
      }
      LIST_FOREACH(e, &env_sched_list[1], env_sched_link) {
+        if (e==NULL) break;
         if (e->reset > 0) {
             e->reset--;
         }
