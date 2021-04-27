@@ -2,6 +2,7 @@
 #include <pmap.h>
 #include <printf.h>
 #define PRI(x) (((x)->env_pri)&0xff)
+#define FUNC1(X) ((((X)->env_pri)&0xff00)>>8)
 /* Overview:
  *  Implement simple round-robin scheduling.
  *
@@ -59,6 +60,13 @@ void sched_yield(void)
     
     //method 2 run curenv;
      count--;
+     if (curenv != NULL) {
+        if(FUNC1(curenv)!=0) {
+            int a = PRI(curenv);
+            a = ((a-FUNC1(curenv))<0) ? 0 : (a-FUNC1(curenv));
+            curenv->env_pri = ((curenv->env_pri)&0xfff0) | a;
+        }
+     }
      if (count <= 0 || curenv == NULL) {
         if (curenv != NULL) {
             //curenv->env_pri--;
