@@ -62,7 +62,7 @@ void sched_yield(void)
      }*/
 
      e = curenv;
-     if(count==0 || e == NULL ){ //|| e->env_status == ENV_NOT_RUNNABLE) {
+     if(count==0 || e == NULL || e->env_status == ENV_NOT_RUNNABLE) {
         do {
             e = LIST_FIRST(&env_sched_list[c_list]);
             if (e==NULL) {
@@ -78,7 +78,7 @@ void sched_yield(void)
             if (LIST_EMPTY(&env_sched_list[c_list])) {
                 c_list = 1 - c_list;
             }
-        } while (e == NULL);
+        } while (e == NULL || e->env_status == ENV_NOT_RUNNABLE);
      }
      count--;
      //e->env_runs++;

@@ -216,7 +216,7 @@ env_alloc(struct Env **new, u_int parent_id)
     /*Step 3: Initialize every field of new Env with appropriate values.*/
 	e->env_id = mkenvid(e);
 	e->env_parent_id = parent_id;
-	//e->env_status = ENV_RUNNABLE;
+    e->env_status = ENV_RUNNABLE;
     e->env_runs = 0;
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
@@ -295,7 +295,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     while (i < sgsize) {
         size = MIN(BY2PG, sgsize - i);
         r = page_alloc(&p);
-        if (r!=0) return -E_NO_MEM;
+        if (r!=0) return r;
         //p->pp_ref++;
         page_insert(env->env_pgdir, p, va+i, PTE_R);
         bzero((void*)page2kva(p), size);
@@ -344,8 +344,8 @@ load_icode(struct Env *e, u_char *binary, u_int size)
 
     /*Step 3:load the binary using elf loader. */
     load_elf(binary, size, &entry_point,(void*)e, load_icode_mapper);
-    e->env_status = ENV_RUNNABLE;
-    LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
+    //e->env_status = ENV_RUNNABLE;
+    //LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
     /*Step 4:Set CPU's PC register as appropriate value. */
     e->env_tf.pc = entry_point;
 }
@@ -373,9 +373,8 @@ env_create_priority(u_char *binary, int size, int priority)
     /*Step 3: Use load_icode() to load the named elf binary,
       and insert it into env_sched_list using LIST_INSERT_HEAD. */
     load_icode(e, binary, size);
-
     /*Step 4: add e to schequeue. */
-    //LIST_INSERT_TAIL(&env_sched_list[0], e, env_sched_link);
+    LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
 }
 /* Overview:
  * Allocates a new env with default priority value.
