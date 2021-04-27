@@ -1,7 +1,7 @@
 #include <env.h>
 #include <pmap.h>
 #include <printf.h>
-
+#define PRI(x) (((x)->env_pri)&0xff)
 /* Overview:
  *  Implement simple round-robin scheduling.
  *
@@ -66,18 +66,28 @@ void sched_yield(void)
             //    env_destroy(curenv);
             //    panic("sched_yield_new use env_destroy and returned!\n");
             //}
-            LIST_INSERT_HEAD(&env_sched_list[!point], curenv, env_sched_link);
+            LIST_INSERT_TAIL(&env_sched_list[0], curenv, env_sched_link);
         }
-        if (LIST_EMPTY(&env_sched_list[point])) {
+        /*if (LIST_EMPTY(&env_sched_list[point])) {
             point = 1 - point;
+        }*/
+        //printf("check1\n");
+        int pri = 0;
+        struct Env* max;
+        LIST_FOREACH(e, &env_sched_list[0], env_sched_link) {
+            if (PRI(e)>pri) {
+                pri = PRI(e);
+                max = e;
+            }
         }
-        if (LIST_EMPTY(&env_sched_list[point])) {
+        //printf("check2\n");
+        if (LIST_EMPTY(&env_sched_list[0])) {
             panic("^^^^No env is RUNNABLE!^^^^\n");
         }
-        e = LIST_FIRST(&env_sched_list[point]);
-        LIST_REMOVE(e, env_sched_link);
-        count = e->env_pri;
-        env_run(e);
+        //e = LIST_FIRST(&env_sched_list[point]);
+        LIST_REMOVE(max, env_sched_link);
+        count = pri;
+        env_run(max);
      }
      //if (e!=NULL) {
      //   printf("\npri:%d\n", e->env_pri);
