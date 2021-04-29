@@ -102,7 +102,7 @@ static Pte *boot_pgdir_walk(Pde *pgdir, u_long va, int create)
 	if (!((*pgdir_entryp) & PTE_V)) {
 		if (create == 1) {
 			*pgdir_entryp = PADDR(alloc(BY2PG, BY2PG, 1));
-			*pgdir_entryp = *pgdir_entryp | PTE_V | PTE_R;
+			*pgdir_entryp = *pgdir_entryp | PTE_V;
 		}
 		else {
 			return 0;
@@ -137,7 +137,7 @@ void boot_map_segment(Pde *pgdir, u_long va, u_long size, u_long pa, int perm)
 	for (i=0; i<size; i+=BY2PG) {
 		va_temp = va + i;
 		pgtable_entry = boot_pgdir_walk(pgdir, va_temp, 1);
-		*pgtable_entry = (pa + i) |(perm);
+		*pgtable_entry = (pa + i) |(perm | PTE_V);
 	}
 
 }
