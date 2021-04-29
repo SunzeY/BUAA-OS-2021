@@ -97,7 +97,7 @@ pgfault(u_int va)
 
 /* Overview:
  * 	Map our virtual page `pn` (address pn*BY2PG) into the target `envid`
- * at the same virtual address. 
+ * at the same virtual address.
  *
  * Post-Condition:
  *  if the page is writable or copy-on-write, the new mapping must be 
@@ -118,6 +118,22 @@ duppage(u_int envid, u_int pn)
 	u_int addr;
 	u_int perm;
 
+    addr = pn*BY2PG;
+    
+    perm = ((Pte*)(*vpt))[pn] & 0xfff;
+    
+    if((perm&PTE_R!=0)||(perm&PTE_COW)!=0) {
+       perm = perm | PTE_COW;
+    }
+    else if ((perm&PTE_R)!=0&&(perm&PTE_LIBRARY)!=0) {
+        perm = perm | PTE_R;
+    }
+    if(syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+        user_panic("syscall_mem_map son failed!");
+    }
+    if(syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+        user_panic("syscall_mem_map father failed!");
+    }
 	//	user_panic("duppage not implemented");
 }
 
@@ -141,12 +157,24 @@ fork(void)
 	extern struct Env *env;
 	u_int i;
 
-
 	//The parent installs pgfault using set_pgfault_handler
+    set_pgfault_handler(pgfault);
 
 	//alloc a new alloc
+    newenvid = syscall_env_alloc();
+    if (newenvid == 0) { //in child env
+        env = &envs[ENVX(syscall_getenvid())];
+        return 0;
+    }
+    for (i=0; i < USTACKTOP; i+=BY2PG) {
+        if ((((Pde*)(*vpd))[PDX(i)]&PTE_V) &&
+            (((Pte*)(*vpt))[PTX(i)]&PTE_V)) {
+                duppage(newenvid, VPN(i));
+            }
+    }
 
-
+    //in parent env
+    
 	return newenvid;
 }
 
