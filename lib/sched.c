@@ -35,7 +35,7 @@ void sched_yield(void)
      */
 
      // method 1 loop;
-     /*e = curenv;
+     e = curenv;
      if(count==0 || e == NULL || e->env_status == ENV_NOT_RUNNABLE) {
         do {
             e = LIST_FIRST(&env_sched_list[point]);
@@ -55,10 +55,10 @@ void sched_yield(void)
         } while (e == NULL || e->env_status == ENV_NOT_RUNNABLE);
      }
      count--;
-     env_run(e);*/
+     env_run(e);
     
     //method 2 run curenv;
-     count--;
+     /*count--;
      if (count <= 0 || curenv == NULL) {
         if (curenv != NULL) {
             //curenv->env_pri--;
@@ -85,5 +85,5 @@ void sched_yield(void)
      //   printf("status:%d\n", e->env_status);
      //}
      env_run(curenv);
-     panic("^^^^sched_yield func reach end!^^^^\n");
+     panic("^^^^sched_yield func reach end!^^^^\n");*/
 }
