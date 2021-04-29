@@ -25,7 +25,7 @@ objects		  := $(boot_dir)/start.o			  \
 				 $(user_dir)/*.x \
 				 $(mm_dir)/*.o
 
-.PHONY: all $(modules) clean
+.PHONY: all $(modules) clean run test
 
 all: $(modules) vmlinux
 
