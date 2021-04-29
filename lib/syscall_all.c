@@ -195,9 +195,9 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
     if (srcva>=UTOP || dstva >= UTOP || (perm & PTE_COW)) {
         return -E_INVAL;
     }
-    ret = envid2env(srcid, &srcenv, 1);
+    ret = envid2env(srcid, &srcenv, 0);
     if (ret<0) return ret;
-    ret = envid2env(dstid, &dstenv, 1);
+    ret = envid2env(dstid, &dstenv, 0);
     if (ret<0) return ret;
     ppage = page_lookup(srcenv->env_pgdir, round_srcva, &ppte);
     if (ppage==NULL) {
@@ -232,7 +232,7 @@ int sys_mem_unmap(int sysno, u_int envid, u_int va)
     if (va>=UTOP) {
         return -E_INVAL;
     }
-    ret = envid2env(envid, &env, 1);
+    ret = envid2env(envid, &env, 0);
     if (ret < 0)
         return ret;
     page_remove(env->env_pgdir, va);
