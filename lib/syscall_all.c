@@ -195,7 +195,10 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
     if (srcva>=UTOP || dstva >= UTOP || (perm & PTE_COW)) {
         return -E_INVAL;
     }
-    ret = envid2env(srcid, &srcenv, 1);
+    if(!(perm&PTE_V)) {
+        return -E_INVAL;
+    }
+    ret = envid2env(srcid, &srcenv, 0);
     if (ret<0) return ret;
     ret = envid2env(dstid, &dstenv, 0);
     if (ret<0) return ret;
@@ -203,7 +206,7 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
     if (ppage==NULL) {
         return -E_INVAL;
     }
-    if (((*ppte & PTE_R)==0) && (perm&PTE_R)==1) { //restrication
+    if (((*ppte & PTE_R)==0) && (perm&PTE_R)==1) { //ristrication
         return -E_INVAL;
     }
     ppage = pa2page(PTE_ADDR(*ppte));
