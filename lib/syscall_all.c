@@ -197,7 +197,7 @@ int sys_mem_map(int sysno, u_int srcid, u_int srcva, u_int dstid, u_int dstva,
     }
     ret = envid2env(srcid, &srcenv, 1);
     if (ret<0) return ret;
-    ret = envid2env(dstid, &dstenv, 1);
+    ret = envid2env(dstid, &dstenv, 0);
     if (ret<0) return ret;
     ppage = page_lookup(srcenv->env_pgdir, round_srcva, &ppte);
     if (ppage==NULL) {
