@@ -269,8 +269,9 @@ int sys_env_alloc(void)
     bcopy((void*)KERNEL_SP - sizeof(struct Trapframe), &(curenv->env_tf), sizeof(struct Trapframe));
     bcopy(&(curenv->env_tf), &(e->env_tf), sizeof(struct Trapframe));
     e->env_tf.pc = e->env_tf.cp0_epc;
-    e->env_tf.regs[2] = 0;
+    e->env_tf.regs[2] = 0; //return value is 0 in child env;
     e->env_pri = curenv->env_pri;
+    e->env_status = ENV_NOT_RUNNABLE;
 
 	return e->env_id; //in parents env, return the id of child env
 	//	panic("sys_env_alloc not implemented");

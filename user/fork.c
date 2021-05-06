@@ -121,18 +121,29 @@ duppage(u_int envid, u_int pn)
     addr = pn*BY2PG;
     
     perm = ((Pte*)(*vpt))[pn] & 0xfff;
-    
-    if((perm&PTE_R!=0)||(perm&PTE_COW)!=0) {
-       perm = perm | PTE_COW;
+    if ((perm&PTE_R)==0) {
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup read-only PTE\n");
+        }
     }
-    else if ((perm&PTE_R)!=0&&(perm&PTE_LIBRARY)!=0) {
-        perm = perm | PTE_R;
+    else if (perm&PTE_LIBRARY) {
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup LIBARAY PTE\n");
+        }
     }
-    if(syscall_mem_map(0, addr, envid, addr, perm)!=0) {
-        user_panic("syscall_mem_map son failed!");
+    else if (perm&PTE_COW) {
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup PTE which has been duplicated before\n");
+        }
     }
-    if(syscall_mem_map(0, addr, envid, addr, perm)!=0) {
-        user_panic("syscall_mem_map father failed!");
+    else {
+         perm = perm | PTE_COW;
+         if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup PTE with COW in child env\n");
+         }
+         if (syscall_mem_map(0, addr, 0, addr, perm)!=0) {
+            user_panic("failed to dup PTE with COW in father env\n");
+         }
     }
 	//	user_panic("duppage not implemented");
 }
