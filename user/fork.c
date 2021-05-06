@@ -83,16 +83,33 @@ static void
 pgfault(u_int va)
 {
 	u_int *tmp;
+    int ret;
 	//	writef("fork.c:pgfault():\t va:%x\n",va);
-    
-    //map the new page at a temporary place
+    if ((((Pte*)(*vpt))[VPN(va)]&PTE_COW) == 0) {
+        user_panic("User pgfault haddler facing a non-COW page\n");
+    }
+    va = ROUNDDOWN(va, BY2PG);
 
+    //map the new page at a temporary place
+    tmp = USTACKTOP;
+    ret = syscall_mem_alloc(0, tmp, PTE_V|PTE_R);
+    if (ret<0) {
+        user_panic("User pgfault haddler mem_alloc faild\n");
+    }
 	//copy the content
-	
+    user_bcopy(va, tmp, BY2PG);
+
     //map the page on the appropriate place
-	
+	ret = syscall_mem_map(0, tmp, 0, va, PTE_V|PTE_R);
+    if (ret<0) {
+        user_panic("User pgfault haddler mem_map faild\n");
+    }
     //unmap the temporary place
-	
+	ret = syscall_mem_unmap(0, tmp);
+    if (ret<0) {
+        user_panic("User pgfault haddler mem_unmap failed\n");
+    }
+    return;
 }
 
 /* Overview:
@@ -138,7 +155,10 @@ duppage(u_int envid, u_int pn)
     }
     else {
          perm = perm | PTE_COW;
-         if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+         int a = 0;
+         //writef("chidid = %d\n addr = %x\n", envid, addr);
+         if ((a=syscall_mem_map(0, addr, envid, addr, perm))!=0) {
+            //writef("ERROR: %d\n", a);
             user_panic("failed to dup PTE with COW in child env\n");
          }
          if (syscall_mem_map(0, addr, 0, addr, perm)!=0) {
@@ -178,14 +198,26 @@ fork(void)
         return 0;
     }
     for (i=0; i < USTACKTOP; i+=BY2PG) {
-        if ((((Pde*)(*vpd))[PDX(i)]&PTE_V) &&
-            (((Pte*)(*vpt))[PTX(i)]&PTE_V)) {
+        if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
+            (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 duppage(newenvid, VPN(i));
             }
     }
-
+    //printf(">>>>>>>>finsh copy and try to set child env<<<<<<<\n");
     //in parent env
-    
+    int ret = 0;
+    ret = syscall_mem_alloc(newenvid, UXSTACKTOP-BY2PG, PTE_V | PTE_R | PTE_LIBRARY);
+    if (ret<0) {
+        user_panic("fork alloc mem failed\n");
+    }
+    ret = syscall_set_pgfault_handler(newenvid, __asm_pgfault_handler, UXSTACKTOP);
+    if (ret<0) {
+        user_panic("fork set pgfault_handler failed\n");
+    }
+    ret = syscall_set_env_status(newenvid, ENV_RUNNABLE);
+    if (ret<0) {
+        user_panic("fork set status failed\n");
+    }
 	return newenvid;
 }
 
