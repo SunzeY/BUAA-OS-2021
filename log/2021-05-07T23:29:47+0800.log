@@ -1,0 +1,12 @@
+Autotest: Begin at 2021年 05月 07日 星期五 23:29:47 CST
+[32m[ found your pageReplace.cpp ][0m
+pageReplace.cpp: In function 'void pageReplace(long int*, long int)':
+pageReplace.cpp:15:44: error: 'get_Page' was not declared in this scope
+     unsigned long page_num = get_Page(nwAdd);
+                                            ^
+pageReplace.cpp:30:9: error: 'phsic_memory' was not declared in this scope
+         phsic_memory[point] = point;
+         ^
+make: *** [main] Error 1
+[31m[01m[ compile error ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 07日 星期五 23:29:50 CST ][0m
