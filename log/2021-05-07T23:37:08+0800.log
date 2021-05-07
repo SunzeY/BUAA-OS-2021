@@ -1,0 +1,11 @@
+Autotest: Begin at 2021年 05月 07日 星期五 23:37:08 CST
+[32m[ found your pageReplace.cpp ][0m
+pageReplace.cpp: In function 'void pageReplace(long int*, long int)':
+pageReplace.cpp:19:5: error: expected primary-expression before '}' token
+     }
+     ^
+pageReplace.cpp:19:5: error: return-statement with a value, in function returning 'void' [-fpermissive]
+pageReplace.cpp:19:5: error: expected ';' before '}' token
+make: *** [main] Error 1
+[31m[01m[ compile error ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 07日 星期五 23:37:12 CST ][0m
