@@ -84,7 +84,7 @@ pgfault(u_int va)
 {
 	u_int *tmp;
     int ret;
-	//	writef("fork.c:pgfault():\t va:%x\n",va);
+    writef("fork.c:pgfault():\t va:%x\n",va);
     if ((((Pte*)(*vpt))[VPN(va)]&PTE_COW) == 0) {
         user_panic("User pgfault haddler facing a non-COW page\n");
     }
@@ -138,6 +138,9 @@ duppage(u_int envid, u_int pn)
     addr = pn*BY2PG;
     
     perm = ((Pte*)(*vpt))[pn] & 0xfff;
+    /*if (addr==0x407000) {
+        user_panic("DEBUG: perm: %d, %d, %d, %d, %d", perm&PTE_LIBRARY, perm&PTE_V, perm&PTE_R, perm&PTE_COW);
+    }*/
     if ((perm&PTE_R)==0) {
         if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
             user_panic("failed to dup read-only PTE\n");
@@ -149,7 +152,7 @@ duppage(u_int envid, u_int pn)
         }
     }
     else if (perm&PTE_COW) {
-        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+        if (syscall_mem_map(0, addr, envid, addr, perm|PTE_COW)!=0) {
             user_panic("failed to dup PTE which has been duplicated before\n");
         }
     }
@@ -187,12 +190,14 @@ fork(void)
 	extern struct Env *envs;
 	extern struct Env *env;
 	u_int i;
-
+    writef("DEBUG: >>>>>fork_begin\n");
 	//The parent installs pgfault using set_pgfault_handler
     set_pgfault_handler(pgfault);
+    writef("DEBUG: >>>>>finsih pgfault\n");
 
 	//alloc a new alloc
     newenvid = syscall_env_alloc();
+    writef("DEBUG: >>>>>finsh env_alloc\n");
     if (newenvid == 0) { //in child env
         env = &envs[ENVX(syscall_getenvid())];
         return 0;

@@ -15,15 +15,20 @@ void mips_init()
 	
 	mips_vm_init();
 	page_init();
-	
+    printf("DEBUG: page_init finsh\n");	
 	env_init();
 	
+    printf("DEBUG: env_init finsh\n");	
 	ENV_CREATE(user_fktest);
 	//ENV_CREATE(user_pingpong);
-	
-    	trap_init();
+    //ENV_CREATE(user_mytest);
+    printf("DEBUG: testenv created\n");	
+    trap_init();
+    
+    printf("DEBUG: trap_init finish\n");	
 	kclock_init();
 
+    printf("DEBUG: kclock_init finish\n");	
 	
 	while(1);
 	panic("init.c:\tend of mips_init() reached!");
