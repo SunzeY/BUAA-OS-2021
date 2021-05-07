@@ -12,7 +12,7 @@ void pageReplace(long* physic_memory, long nwAdd)
 {
     static int point = 0;
     static int cur_filled_num = 0;
-    unsigned long page_num = get_Page(nwAdd);
+    unsigned long page_num = GET_PAGE(nwAdd);
     if (map[page_num]>0) {
         lastuse[map[page_num]] = true;
     }
@@ -27,7 +27,7 @@ void pageReplace(long* physic_memory, long nwAdd)
         }
         map[lastuse[point]] = 0;
         map[page_num] = point;
-        phsic_memory[point] = point;
+        physic_memory[point] = point;
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
