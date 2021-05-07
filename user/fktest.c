@@ -8,6 +8,7 @@ void umain()
 
 	if ((id = fork()) == 0) {
         writef(">>>>>>>>>>>>>>>>>>envid:%d :fork finish\n", id);
+        
 		if ((id = fork()) == 0) {
             writef(">>>>>>>>>>>>>>>>>>>envid222222222222222222222222\n", id);
 			a += 3;
@@ -18,11 +19,14 @@ void umain()
 		}
 
 		a += 2;
+        writef("^^^^^^^^^child_id: %d", id);
 
 		for (;;) {
 			writef("\tenvid = %d, this is child :a:%d\n", syscall_getenvid(), a);
 		}
+        //writef("^^^^^^^^^child_id: %d", id);
 	}
+    writef("^^^^^^^child_id: %d", id);
     //return;
 	a++;
 

@@ -190,14 +190,14 @@ fork(void)
 	extern struct Env *envs;
 	extern struct Env *env;
 	u_int i;
-    writef("DEBUG: >>>>>fork_begin\n");
+    //writef("DEBUG: >>>>>fork_begin\n");
 	//The parent installs pgfault using set_pgfault_handler
     set_pgfault_handler(pgfault);
-    writef("DEBUG: >>>>>finsih pgfault\n");
+    //writef("DEBUG: >>>>>finsih pgfault\n");
 
 	//alloc a new alloc
     newenvid = syscall_env_alloc();
-    writef("DEBUG: >>>>>finsh env_alloc\n");
+    //writef("DEBUG: >>>>>finsh env_alloc\n");
     if (newenvid == 0) { //in child env
         env = &envs[ENVX(syscall_getenvid())];
         return 0;
