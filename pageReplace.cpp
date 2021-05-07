@@ -15,6 +15,7 @@ void pageReplace(long* physic_memory, long nwAdd)
     unsigned long page_num = GET_PAGE(nwAdd);
     if (map[page_num]>0) {
         lastuse[map[page_num]] = true;
+        return
     }
     if (cur_filled_num<MAX_PHY_PAGE) {
         map[page_num] = cur_filled_num;
