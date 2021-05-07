@@ -28,7 +28,7 @@ void pageReplace(long* physic_memory, long nwAdd)
         }
         map[lastuse[point]] = 0;
         map[page_num] = point;
-        physic_memory[point] = point;
+        physic_memory[point] = page_num;
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
