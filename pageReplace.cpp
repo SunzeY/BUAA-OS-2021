@@ -81,7 +81,8 @@ void pageReplace(long* physic_memory, long nwAdd)
     int page_num = GET_PAGE(nwAdd);
     for (char i = 0; i <=MAX_PHY_PAGE; i++){
         if (page_num==physic_memory[i]) {
-            lastuse[i]=true
+            lastuse[i]=true;
+            return;
         }
     }
     if (cur_filled_num<MAX_PHY_PAGE) {
