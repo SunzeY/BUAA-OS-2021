@@ -2,6 +2,7 @@
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
 #define MAX_PAGE 12
+#define true_inforce 2
 #define true 1
 #define false 0
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
@@ -45,7 +46,11 @@ void pageReplace(long* physic_memory, long nwAdd)
     int page_num = GET_PAGE(nwAdd);
     for (char i = 0; i <MAX_PHY_PAGE; i++){
         if (page_num==physic_memory[i]) {
-            lastuse[i] = true;
+            if (lastuse[i]==true) {
+                lastuse[i] = true_inforce;
+            } else {
+                lastuse[i] = true;
+            }
             return;
         }
     }
@@ -54,7 +59,7 @@ void pageReplace(long* physic_memory, long nwAdd)
     }
     else {
         while(lastuse[point]) {
-            lastuse[point] = false;
+            lastuse[point]--;
             point = (point+1) & (MAX_PHY_PAGE-1);
         }
         physic_memory[point] = page_num;
