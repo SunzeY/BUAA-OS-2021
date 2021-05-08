@@ -89,6 +89,7 @@ void pageReplace(long* physic_memory, long nwAdd)
     if (cur_filled_num<MAX_PHY_PAGE) {
         physic_memory[cur_filled_num++] = page_num;
     }
+
     else {
         while(lastuse[point]) {
             lastuse[point]=false;
