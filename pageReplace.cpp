@@ -1,3 +1,4 @@
+#pragma GCC optimize (2)
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
 #define NUM_OF_PAGE 524288
@@ -12,7 +13,7 @@ void pageReplace(long* physic_memory, long nwAdd)
 {
     static int point = 0;
     static int cur_filled_num = 0;
-    unsigned long page_num = GET_PAGE(nwAdd);
+    long page_num = GET_PAGE(nwAdd);
     if (map[page_num]>0) {
         lastuse[map[page_num]] = true;
         return;
