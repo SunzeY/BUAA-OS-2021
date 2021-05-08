@@ -5,6 +5,7 @@
 #define true_inforce 2
 #define true 1
 #define false 0
+#define true_inforce 2
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
 
 /*char lastuse[MAX_PHY_PAGE];
@@ -37,6 +38,38 @@ void pageReplace(long* physic_memory, long nwAdd)
 }
 */
 
+//third_chance
+char lastuse[MAX_PHY_PAGE];
+void pageReplace(long* physic_memory, long nwAdd)
+{
+    static char point = 0;
+
+    static char cur_filled_num = 0;
+    int page_num = GET_PAGE(nwAdd);
+    for (char i = 0; i <MAX_PHY_PAGE; i++){
+        if (page_num==physic_memory[i]) {
+            if (lastuse[i]==true) {
+                lastuse[i]=true_inforce;
+            } else {
+                lastuse[i] = true;
+            }
+        }
+    }
+    if (cur_filled_num<MAX_PHY_PAGE) {
+        physic_memory[cur_filled_num++] = page_num;
+    }
+    else {
+        while(lastuse[point]) {
+            lastuse[point]--;
+            point = (point+1) & (MAX_PHY_PAGE-1);
+        }
+        physic_memory[point] = page_num;
+        point = (point+1) & (MAX_PHY_PAGE-1);
+    }
+}
+
+//secont_chance
+/*
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
@@ -60,6 +93,7 @@ void pageReplace(long* physic_memory, long nwAdd)
         }
         physic_memory[point] = page_num;
         point = (point+1) & (MAX_PHY_PAGE-1);
+    
     }
 }
-
+*/
