@@ -1,0 +1,18 @@
+Autotest: Begin at 2021年 05月 09日 星期日 00:39:47 CST
+[32m[ found your pageReplace.cpp ][0m
+pageReplace.cpp:105:26: error: redefinition of 'char lastuse [64]'
+ char lastuse[MAX_PHY_PAGE];
+                          ^
+pageReplace.cpp:76:6: note: 'char lastuse [64]' previously declared here
+ char lastuse[MAX_PHY_PAGE];
+      ^
+pageReplace.cpp: In function 'void pageReplace(long int*, long int)':
+pageReplace.cpp:106:6: error: redefinition of 'void pageReplace(long int*, long int)'
+ void pageReplace(long* physic_memory, long nwAdd)
+      ^
+pageReplace.cpp:77:6: note: 'void pageReplace(long int*, long int)' previously defined here
+ void pageReplace(long* physic_memory, long nwAdd)
+      ^
+make: *** [main] Error 1
+[31m[01m[ compile error ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 09日 星期日 00:39:50 CST ][0m
