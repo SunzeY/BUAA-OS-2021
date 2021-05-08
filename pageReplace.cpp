@@ -6,7 +6,7 @@
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
 
 bool lastuse[MAX_PHY_PAGE];
-int map[NUM_OF_PAGE];
+char map[NUM_OF_PAGE];
 
 //second chance:
 void pageReplace(long* physic_memory, long nwAdd)
