@@ -3,9 +3,11 @@
 #define MAX_PHY_PAGE 64
 #define NUM_OF_PAGE 524288
 #define MAX_PAGE 12
+#define true 1
+#define false 0
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
 
-bool lastuse[MAX_PHY_PAGE];
+char lastuse[MAX_PHY_PAGE];
 char map[NUM_OF_PAGE];
 
 //second chance:
