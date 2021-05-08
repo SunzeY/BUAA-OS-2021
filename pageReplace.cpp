@@ -48,7 +48,6 @@ void pageReplace(long* physic_memory, long nwAdd)
             return;
         }
     }
-    point = 0;
     if (cur_filled_num<MAX_PHY_PAGE) {
         physic_memory[cur_filled_num++] = page_num;
     }
