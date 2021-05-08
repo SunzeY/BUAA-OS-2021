@@ -1,6 +1,7 @@
 #pragma GCC optimize (2)
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
+#define MAX_PHY_PAGE_HALF 32
 #define MAX_PAGE 12
 #define true_inforce 2
 #define true 1
@@ -39,6 +40,7 @@ void pageReplace(long* physic_memory, long nwAdd)
 */
 
 //third_chance
+/*
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
@@ -67,9 +69,10 @@ void pageReplace(long* physic_memory, long nwAdd)
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
+*/
 
-//secont_chance
-/*
+//secont_chance_opt_search
+
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
@@ -77,9 +80,16 @@ void pageReplace(long* physic_memory, long nwAdd)
 
     static char cur_filled_num = 0;
     int page_num = GET_PAGE(nwAdd);
-    for (char i = 0; i <MAX_PHY_PAGE; i++){
-        if (page_num==physic_memory[i]) {
-            lastuse[i]=true;
+    char temp_point = 0;
+    for (char i = 0; i <MAX_PHY_PAGE_HALF; i++){
+        temp_point = (i+point)&(MAX_PHY_PAGE-1)
+        if (page_num==physic_memory[temp_point]) {
+            lastuse[temp_point]=true;
+            return;
+        }
+        temp_point = (point-i<0? point-i+MAX_PHY_PAGE : point-i)&(MAX_PHY_PAGE);
+        if (page_num==physic_memory[temp_point]) {
+            lastuse[temp_point]=true;
             return;
         }
     }
@@ -96,4 +106,4 @@ void pageReplace(long* physic_memory, long nwAdd)
     
     }
 }
-*/
+
