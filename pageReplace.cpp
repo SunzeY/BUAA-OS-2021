@@ -102,7 +102,6 @@ void pageReplace(long* physic_memory, long nwAdd)
 
 //secont_chance_opt_search
 
-
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
