@@ -72,12 +72,11 @@ void pageReplace(long* physic_memory, long nwAdd)
 */
 
 //second_chance
-
+/*
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
     static char point = 0;
-
     static char cur_filled_num = 0;
     int page_num = GET_PAGE(nwAdd);
     for (char i = 0; i <MAX_PHY_PAGE; i++){
@@ -99,27 +98,29 @@ void pageReplace(long* physic_memory, long nwAdd)
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
-
+*/
 
 //secont_chance_opt_search
-/*
+
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
     static char point = 0;
-
+    static char last_point = 0;
     static char cur_filled_num = 0;
     int page_num = GET_PAGE(nwAdd);
     char temp_point = 0;
     for (char i = 0; i <=MAX_PHY_PAGE_HALF; i++){
-        temp_point = (i+point)&(MAX_PHY_PAGE-1);
+        temp_point = (i+last_point)&(MAX_PHY_PAGE-1);
         if (page_num==physic_memory[temp_point]) {
             lastuse[temp_point]=true;
+            last_point = temp_point;
             return;
         }
-        temp_point = (point-i<0? point-i+MAX_PHY_PAGE : point-i)&(MAX_PHY_PAGE-1);
+        temp_point = (last_point-i<0? last_point-i+MAX_PHY_PAGE : last_point-i)&(MAX_PHY_PAGE-1);
         if (page_num==physic_memory[temp_point]) {
             lastuse[temp_point]=true;
+            last_point = temp_point;
             return;
         }
     }
@@ -132,8 +133,8 @@ void pageReplace(long* physic_memory, long nwAdd)
             point = (point+1) & (MAX_PHY_PAGE-1);
         }
         physic_memory[point] = page_num;
+        last_point = point;
         point = (point+1) & (MAX_PHY_PAGE-1);
-    
     }
 }
-*/
+
