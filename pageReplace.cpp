@@ -76,10 +76,10 @@ void pageReplace(long* physic_memory, long nwAdd)
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
-    register static char point = 0;
-    register static char cur_filled_num = 0;
+    register static int point = 0;
+    register static int  cur_filled_num = 0;
     int page_num = GET_PAGE(nwAdd);
-    for (register char i = 0; i <MAX_PHY_PAGE; i++){
+    for (register int i = 0; i <MAX_PHY_PAGE; i++){
         if (page_num==physic_memory[i]) {
             lastuse[i]=true;
             return;
