@@ -3,22 +3,23 @@
 #define MAX_PHY_PAGE 64
 #define MAX_PHY_PAGE_HALF 32
 #define MAX_PAGE 12
+#define NUM_OF_PAGE 16384
 #define true_inforce 2
 #define true 1
 #define false 0
 #define true_inforce 2
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
 
-/*char lastuse[MAX_PHY_PAGE];
+char lastuse[MAX_PHY_PAGE];
 char map[NUM_OF_PAGE];
-
+/*
 //with hashmap:
 void pageReplace(long* physic_memory, long nwAdd)
 {
     static int point = 0;
     static int cur_filled_num = 0;
-    long page_num = GET_PAGE(nwAdd);
-    if (map[page_num]>0) {
+    int page_num = GET_PAGE(nwAdd);
+    if (map[page_num/32]&(1<<(page_num%32)) = 0) {
         lastuse[map[page_num]] = true;
         return;
     }
@@ -72,9 +73,8 @@ void pageReplace(long* physic_memory, long nwAdd)
 */
 
 //second_chance
-/*
-char lastuse[MAX_PHY_PAGE];
 
+char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
     static char point = 0;
@@ -99,10 +99,10 @@ void pageReplace(long* physic_memory, long nwAdd)
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
-*/
+
 
 //secont_chance_opt_search
-
+/*
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
@@ -138,4 +138,4 @@ void pageReplace(long* physic_memory, long nwAdd)
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
-
+*/
