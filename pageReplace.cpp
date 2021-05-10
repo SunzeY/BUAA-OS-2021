@@ -1,4 +1,4 @@
-#pragma GCC optimize (3)
+#pragma GCC optimize (2)
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
 #define MAX_PHY_PAGE_HALF 32
@@ -76,10 +76,10 @@ void pageReplace(long* physic_memory, long nwAdd)
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
-    static char point = 0;
-    static char cur_filled_num = 0;
+    register static char point = 0;
+    register static char cur_filled_num = 0;
     int page_num = GET_PAGE(nwAdd);
-    for (char i = 0; i <MAX_PHY_PAGE; i++){
+    for (register char i = 0; i <MAX_PHY_PAGE; i++){
         if (page_num==physic_memory[i]) {
             lastuse[i]=true;
             return;
