@@ -2,6 +2,8 @@
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
 #define MAX_PAGE 12
+#define true 1
+#define false 0
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
 
 //char lastuse[MAX_PHY_PAGE];
