@@ -74,6 +74,7 @@ void pageReplace(long* physic_memory, long nwAdd)
 //second_chance
 
 char lastuse[MAX_PHY_PAGE];
+
 void pageReplace(long* physic_memory, long nwAdd)
 {
     static char point = 0;
