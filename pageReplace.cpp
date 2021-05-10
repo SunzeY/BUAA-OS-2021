@@ -1,12 +1,7 @@
 #pragma GCC optimize (2)
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
-#define MAX_PHY_PAGE_HALF 32
 #define MAX_PAGE 12
-#define true_inforce 2
-#define true 1
-#define false 0
-#define true_inforce 2
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
 
 //char lastuse[MAX_PHY_PAGE];
