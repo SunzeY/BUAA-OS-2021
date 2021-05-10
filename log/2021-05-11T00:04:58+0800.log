@@ -1,0 +1,11 @@
+Autotest: Begin at 2021年 05月 11日 星期二 00:04:58 CST
+[32m[ found your pageReplace.cpp ][0m
+pageReplace.cpp:77:26: error: redefinition of 'char lastuse [64]'
+ char lastuse[MAX_PHY_PAGE];
+                          ^
+pageReplace.cpp:13:6: note: 'char lastuse [64]' previously declared here
+ char lastuse[MAX_PHY_PAGE];
+      ^
+make: *** [main] Error 1
+[31m[01m[ compile error ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 11日 星期二 00:05:02 CST ][0m
