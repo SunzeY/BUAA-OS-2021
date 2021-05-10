@@ -1,0 +1,21 @@
+Autotest: Begin at 2021年 05月 11日 星期二 00:14:03 CST
+[32m[ found your pageReplace.cpp ][0m
+pageReplace.cpp: In function 'void pageReplace(long int*, long int)':
+pageReplace.cpp:79:26: error: conflicting specifiers in declaration of 'point'
+     register static char point = 0;
+                          ^
+pageReplace.cpp:80:26: error: conflicting specifiers in declaration of 'cur_filled_num'
+     register static char cur_filled_num = 0;
+                          ^
+pageReplace.cpp:88:9: error: 'cur_filled_num' was not declared in this scope
+     if (cur_filled_num<MAX_PHY_PAGE) {
+         ^
+pageReplace.cpp:93:23: error: 'point' was not declared in this scope
+         while(lastuse[point]) {
+                       ^
+pageReplace.cpp:97:23: error: 'point' was not declared in this scope
+         physic_memory[point] = page_num;
+                       ^
+make: *** [main] Error 1
+[31m[01m[ compile error ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 11日 星期二 00:14:06 CST ][0m
