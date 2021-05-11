@@ -429,6 +429,13 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
         e5->env_ipc_recving == 0) {
         return -E_IPC_NOT_RECV;
     }
+    sys_ipc_can_send(sysno, envid_1, value, srcva, perm);
+    sys_ipc_can_send(sysno, envid_2, value, srcva, perm);
+    sys_ipc_can_send(sysno, envid_3, value, srcva, perm);
+    sys_ipc_can_send(sysno, envid_4, value, srcva, perm);
+    sys_ipc_can_send(sysno, envid_5, value, srcva, perm);
+    return 0;
+    /*
     e1->env_ipc_recving = 0;
     e1->env_ipc_from = curenv->env_id;
     e1->env_ipc_value = value;
@@ -509,6 +516,7 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
        // }
         e5->env_ipc_perm = perm;
     }
+    */
 	return 0;
 }
 int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
