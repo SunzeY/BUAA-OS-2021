@@ -43,8 +43,12 @@ void sched_yield(void)
                 if (LIST_EMPTY(&env_sched_list[point])) {
                     point = 1 - point;
                     e = LIST_FIRST(&env_sched_list[point]);
-                } else 
-                    panic("no runnable process\n");
+                } 
+                //else  panic("no runnable process\n");
+                if (LIST_EMPTY(&env_sched_list[point])) {
+                    //panic("no runnable process\n");
+                    continue;
+                }
             }
             count = e->env_pri;
             LIST_REMOVE(e, env_sched_link);

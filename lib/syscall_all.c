@@ -96,6 +96,7 @@ int sys_env_destroy(int sysno, u_int envid)
 
 	printf("[%08x] destroying %08x\n", curenv->env_id, e->env_id);
 	env_destroy(e);
+    printf("after destroy...\n");
 	return 0;
 }
 

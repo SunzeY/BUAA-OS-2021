@@ -15,14 +15,14 @@ void mips_init()
 	
 	mips_vm_init();
 	page_init();
-    printf("DEBUG: page_init finsh\n");	
+    //printf("DEBUG: page_init finsh\n");	
 	env_init();
 	
-    printf("DEBUG: env_init finsh\n");	
-	ENV_CREATE(user_fktest);
+    //printf("DEBUG: env_init finsh\n");	
+	//ENV_CREATE(user_fktest);
 	//ENV_CREATE(user_pingpong);
-    //ENV_CREATE(user_mytest);
-    printf("DEBUG: testenv created\n");	
+    ENV_CREATE(user_mytest);
+    //printf("DEBUG: testenv created\n");	
     trap_init();
     
     printf("DEBUG: trap_init finish\n");	
