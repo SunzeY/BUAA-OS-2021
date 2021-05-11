@@ -12,10 +12,10 @@ extern struct Env *env;
 //
 // Hint: use syscall_yield() to be CPU-friendly.
 void
-ipc_send(u_int whom, u_int val, u_int srcva, u_int perm)
+ipc_send(u_int whom, u_int val, u_int trans_id, u_int srcva, u_int perm)
 {
 	int r;
-
+    if (trans_id == -1) {
 	while ((r = syscall_ipc_can_send(whom, val, srcva, perm)) == -E_IPC_NOT_RECV) {
 		syscall_yield();
 		//writef("QQ");
@@ -24,6 +24,18 @@ ipc_send(u_int whom, u_int val, u_int srcva, u_int perm)
 	if (r == 0) {
 		return;
 	}
+    } else {
+	while ((r = syscall_ipc_can_send(trans_id, val, srcva, perm)) == -E_IPC_NOT_RECV) {
+		syscall_yield();
+		//writef("QQ");
+	}
+
+	if (r == 0) {
+		return;
+	}
+        
+    }
+
 
 	user_panic("error in ipc_send: %d", r);
 }
@@ -36,15 +48,18 @@ u_int
 ipc_recv(u_int *whom, u_int dstva, u_int *perm)
 {
 	//printf("ipc_recv:come 0\n");
-	syscall_ipc_recv(dstva);
-
+    int* p = 0;
+	syscall_ipc_recv(dstva, p);
 	if (whom) {
 		*whom = env->env_ipc_from;
 	}
 
 	if (perm) {
-		*perm = env->env_ipc_perm;
+		*perm = env->env_ipc_from;
 	}
+    if (p!=0) {
+        ipc_send(p, env->env_ipc_value, -1, 0, *perm);
+    }
 
 	return env->env_ipc_value;
 }

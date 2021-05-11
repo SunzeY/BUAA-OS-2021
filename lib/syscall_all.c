@@ -379,11 +379,15 @@ void sys_panic(int sysno, char *msg)
  * ENV_NOT_RUNNABLE, giving up cpu. 
  */
 /*** exercise 4.7 ***/
-void sys_ipc_recv(int sysno, u_int dstva)
+void sys_ipc_recv(int sysno, u_int dstva, int* p)
 {
     if (dstva>=UTOP) return;
     curenv->env_ipc_recving = 1;
     curenv->env_ipc_dstva = dstva;
+    struct Env* e;
+    envid2env(curenv->env_ipc_from, &e, 0);
+    if (e->env_ipc_destination_id != curenv->env_id) *p = e->env_ipc_destination_id;
+    else *p = 0;
     curenv->env_status = ENV_NOT_RUNNABLE;
     sys_yield();
 }
@@ -407,7 +411,7 @@ void sys_ipc_recv(int sysno, u_int dstva)
  */
 /*** exercise 4.7 ***/
 int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
-					 u_int perm)
+					 u_int perm, u_int trans)
 {
 
 	int r;

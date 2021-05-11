@@ -34,11 +34,11 @@ struct Env {
 	u_int env_ipc_recving;          // env is blocked receiving
 	u_int env_ipc_dstva;		// va at which to map received page
 	u_int env_ipc_perm;		// perm of page mapping received
-
+    u_int env_ipc_destination_id;
 	// Lab 4 fault handling
 	u_int env_pgfault_handler;      // page fault state
 	u_int env_xstacktop;            // top of exception stack
-
+    //u_int env_ipc_destination_id;
 	// Lab 6 scheduler counts
 	u_int env_runs;			// number of times been env_run'ed
 	u_int env_nop;                  // align to avoid mul instruction

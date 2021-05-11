@@ -89,9 +89,9 @@ syscall_ipc_can_send(u_int envid, u_int value, u_int srcva, u_int perm)
 }
 
 void
-syscall_ipc_recv(u_int dstva)
+syscall_ipc_recv(u_int dstva, u_int trans)
 {
-	msyscall(SYS_ipc_recv, dstva, 0, 0, 0, 0);
+	msyscall(SYS_ipc_recv, dstva, trans, 0, 0, 0);
 	//msyscall(SYS_ipc_recv, 5, dstva, 0, 0, 0, 0);
 }
 
