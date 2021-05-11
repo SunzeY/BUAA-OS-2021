@@ -440,9 +440,9 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
                         envid_1, 
                         e1->env_ipc_dstva,
                         perm);
-        if (r1!=0) {
-            return r1;
-        }
+      //  if (r1!=0) {
+       //     return r1;
+       // }
         e1->env_ipc_perm = perm;
     }
     e2->env_ipc_recving = 0;
@@ -456,9 +456,9 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
                         envid_2, 
                         e2->env_ipc_dstva,
                         perm);
-        if (r1!=0) {
-            return r1;
-        }
+       // if (r1!=0) {
+       //     return r1;
+       // }
         e2->env_ipc_perm = perm;
     }
     e3->env_ipc_recving = 0;
@@ -472,9 +472,9 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
                         envid_3, 
                         e3->env_ipc_dstva,
                         perm);
-        if (r1!=0) {
-            return r1;
-        }
+       // if (r1!=0) {
+       //    return r1;
+       // }
         e3->env_ipc_perm = perm;
     }
     e4->env_ipc_recving = 0;
@@ -488,9 +488,9 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
                         envid_4, 
                         e4->env_ipc_dstva,
                         perm);
-        if (r1!=0) {
-            return r1;
-        }
+        //if (r1!=0) {
+        //    return r1;
+        //}
         e4->env_ipc_perm = perm;
     }
     e5->env_ipc_recving = 0;
@@ -504,9 +504,9 @@ int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_in
                         envid_5, 
                         e5->env_ipc_dstva,
                         perm);
-        if (r1!=0) {
-            return r1;
-        }
+       // if (r1!=0) {
+       //     return r1;
+       // }
         e5->env_ipc_perm = perm;
     }
 	return 0;
