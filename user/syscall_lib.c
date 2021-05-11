@@ -3,6 +3,10 @@
 #include <mmu.h>
 #include <env.h>
 #include <trap.h>
+int syscall_ipc_can_multi_send(u_int value, u_int srcva, u_int perm, u_int envid_1, u_int envid_2, u_int envid_3, u_int envid_4, u_int envid_5)
+{
+    return msyscall(SYS_ipc_can_multi_send, 8, value, srcva, perm, envid_1, envid_2, envid_3, envid_4, envid_5);
+}
 
 void syscall_putchar(char ch)
 {

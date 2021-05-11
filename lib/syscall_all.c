@@ -406,6 +406,111 @@ void sys_ipc_recv(int sysno, u_int dstva)
  * Hint: the only function you need to call is envid2env.
  */
 /*** exercise 4.7 ***/
+int sys_ipc_can_multi_send(int sysno, u_int value, u_int srcva, u_int perm, u_int envid_1, u_int envid_2, u_int envid_3, u_int envid_4, u_int envid_5)
+{
+
+	int r1, r2, r3, r4, r5;
+	struct Env *e1; 
+	struct Env *e2; 
+	struct Env *e3; 
+	struct Env *e4; 
+	struct Env *e5; 
+	struct Page *p;
+    r1 = envid2env(envid_1, &e1, 0);
+    r2 = envid2env(envid_2, &e2, 0);
+    r3 = envid2env(envid_3, &e3, 0);
+    r4 = envid2env(envid_4, &e4, 0);
+    r5 = envid2env(envid_5, &e5, 0);
+    if (r1<0||r2<0||r3<0||r4<0||r5<0) return r1;
+    if (e1->env_ipc_recving == 0||
+        e2->env_ipc_recving == 0||
+        e3->env_ipc_recving == 0||
+        e4->env_ipc_recving == 0||
+        e5->env_ipc_recving == 0) {
+        return -E_IPC_NOT_RECV;
+    }
+    e1->env_ipc_recving = 0;
+    e1->env_ipc_from = curenv->env_id;
+    e1->env_ipc_value = value;
+    e1->env_status = ENV_RUNNABLE;
+    if (srcva != 0) {
+        r1 = sys_mem_map(sysno, 
+                        curenv->env_id,
+                        srcva,
+                        envid_1, 
+                        e1->env_ipc_dstva,
+                        perm);
+        if (r1!=0) {
+            return r1;
+        }
+        e1->env_ipc_perm = perm;
+    }
+    e2->env_ipc_recving = 0;
+    e2->env_ipc_from = curenv->env_id;
+    e2->env_ipc_value = value;
+    e2->env_status = ENV_RUNNABLE;
+    if (srcva != 0) {
+        r1 = sys_mem_map(sysno, 
+                        curenv->env_id,
+                        srcva,
+                        envid_2, 
+                        e2->env_ipc_dstva,
+                        perm);
+        if (r1!=0) {
+            return r1;
+        }
+        e2->env_ipc_perm = perm;
+    }
+    e3->env_ipc_recving = 0;
+    e3->env_ipc_from = curenv->env_id;
+    e3->env_ipc_value = value;
+    e3->env_status = ENV_RUNNABLE;
+    if (srcva != 0) {
+        r1 = sys_mem_map(sysno, 
+                        curenv->env_id,
+                        srcva,
+                        envid_3, 
+                        e3->env_ipc_dstva,
+                        perm);
+        if (r1!=0) {
+            return r1;
+        }
+        e3->env_ipc_perm = perm;
+    }
+    e4->env_ipc_recving = 0;
+    e4->env_ipc_from = curenv->env_id;
+    e4->env_ipc_value = value;
+    e4->env_status = ENV_RUNNABLE;
+    if (srcva != 0) {
+        r1 = sys_mem_map(sysno, 
+                        curenv->env_id,
+                        srcva,
+                        envid_4, 
+                        e4->env_ipc_dstva,
+                        perm);
+        if (r1!=0) {
+            return r1;
+        }
+        e4->env_ipc_perm = perm;
+    }
+    e5->env_ipc_recving = 0;
+    e5->env_ipc_from = curenv->env_id;
+    e5->env_ipc_value = value;
+    e5->env_status = ENV_RUNNABLE;
+    if (srcva != 0) {
+        r1 = sys_mem_map(sysno, 
+                        curenv->env_id,
+                        srcva,
+                        envid_5, 
+                        e5->env_ipc_dstva,
+                        perm);
+        if (r1!=0) {
+            return r1;
+        }
+        e5->env_ipc_perm = perm;
+    }
+	return 0;
+}
 int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 					 u_int perm)
 {

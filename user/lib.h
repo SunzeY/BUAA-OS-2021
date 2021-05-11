@@ -44,6 +44,7 @@ void user_bzero(void *v, u_int n);
 //extern int msyscall(int, int, int, int, int, int);
 extern int msyscall(int, int, ...);
 
+int syscall_ipc_can_multi_send(u_int value, u_int srcva, u_int perm, u_int envid_1, u_int envid_2, u_int envid_3, u_int envid_4, u_int envid_5);
 void syscall_putchar(char ch);
 u_int syscall_getenvid(void);
 void syscall_yield(void);
