@@ -20,8 +20,8 @@ void mips_init()
 	
     //printf("DEBUG: env_init finsh\n");	
 	//ENV_CREATE(user_fktest);
-	//ENV_CREATE(user_pingpong);
-    ENV_CREATE(user_mytest);
+	ENV_CREATE(user_pingpong);
+    //ENV_CREATE(user_mytest);
     //printf("DEBUG: testenv created\n");	
     trap_init();
     
