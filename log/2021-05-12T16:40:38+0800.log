@@ -1,0 +1,9 @@
+Autotest: Begin at 2021年 05月 12日 星期三 16:40:38 CST
+[32m[ found your pageReplace.cpp ][0m
+pageReplace.cpp: In function 'void pageReplace(long int*, long int)':
+pageReplace.cpp:110:35: error: 'MAX_PHY_PAGE_HALF' was not declared in this scope
+     for (register char i = 0; i <=MAX_PHY_PAGE_HALF; i++){
+                                   ^
+make: *** [main] Error 1
+[31m[01m[ compile error ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 12日 星期三 16:40:42 CST ][0m
