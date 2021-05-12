@@ -1,6 +1,7 @@
 #pragma GCC optimize (2)
 #include "pageReplace.h"
 #define MAX_PHY_PAGE 64
+#define MAX_PHY_PAGE_HALF 32
 #define MAX_PAGE 12
 #define true 1
 #define false 0
