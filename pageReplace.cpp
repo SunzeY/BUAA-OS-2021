@@ -107,8 +107,8 @@ void pageReplace(long* physic_memory, long nwAdd)
     static int point = 0;
     static int last_point = 0;
     static int cur_filled_num = 0;
-    register int page_num = GET_PAGE(nwAdd);
-    register int temp_point = 0;
+    int page_num = GET_PAGE(nwAdd);
+    int temp_point = 0;
     for (register int i = 0; i <=MAX_PHY_PAGE_HALF; i++){
         temp_point = (i+last_point)&(MAX_PHY_PAGE-1);
         if (page_num==physic_memory[temp_point]) {
