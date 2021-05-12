@@ -70,7 +70,7 @@ void pageReplace(long* physic_memory, long nwAdd)
 */
 
 //second_chance
-/*
+
 char lastuse[MAX_PHY_PAGE];
 void pageReplace(long* physic_memory, long nwAdd)
 {
@@ -96,10 +96,10 @@ void pageReplace(long* physic_memory, long nwAdd)
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
-*/
+
 
 //secont_chance_opt_search
-
+/*
 int lastuse[MAX_PHY_PAGE];
 
 void pageReplace(long* physic_memory, long nwAdd)
@@ -136,4 +136,4 @@ void pageReplace(long* physic_memory, long nwAdd)
         point = (point+1) & (MAX_PHY_PAGE-1);
     }
 }
-
+*/
