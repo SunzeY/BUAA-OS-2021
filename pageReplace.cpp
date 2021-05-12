@@ -100,16 +100,16 @@ void pageReplace(long* physic_memory, long nwAdd)
 
 //secont_chance_opt_search
 
-int lastuse[MAX_PHY_PAGE];
+char lastuse[MAX_PHY_PAGE];
 
 void pageReplace(long* physic_memory, long nwAdd)
 {
-    static int point = 0;
-    static int last_point = 0;
-    static int cur_filled_num = 0;
-    int page_num = GET_PAGE(nwAdd);
-    int temp_point = 0;
-    for (register int i = 0; i <=MAX_PHY_PAGE_HALF; i++){
+    static char point = 0;
+    static char last_point = 0;
+    static char cur_filled_num = 0;
+    char page_num = GET_PAGE(nwAdd);
+    char temp_point = 0;
+    for (char i = 0; i <=MAX_PHY_PAGE_HALF; i++){
         temp_point = (i+last_point)&(MAX_PHY_PAGE-1);
         if (page_num==physic_memory[temp_point]) {
             lastuse[temp_point]=true;
