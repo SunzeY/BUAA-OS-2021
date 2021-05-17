@@ -152,7 +152,7 @@ duppage(u_int envid, u_int pn)
         }
     }
     else if (perm&PTE_COW) {
-        if (syscall_mem_map(0, addr, envid, addr, perm|PTE_COW)!=0) {
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
             user_panic("failed to dup PTE which has been duplicated before\n");
         }
     }
@@ -203,7 +203,7 @@ fork(void)
         return 0;
     }
     for (i=UTEXT; i < USTACKTOP; i+=BY2PG) {
-        if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
+        if ((((Pde*)(.*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 duppage(newenvid, VPN(i));
             }
