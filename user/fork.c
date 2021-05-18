@@ -259,6 +259,7 @@ myduppage(u_int envid, u_int pn)
     }
     else if (perm&PTE_COW) {
         pgfault(addr);
+        addr = pn*BY2PG;
         perm = ((Pte*)(*vpt))[pn] & 0xfff;
         if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
             user_panic("failed to dup PTE which has been duplicated before\n");
@@ -293,7 +294,7 @@ tfork(void)
     }
     u_int critical_point = uget_sp();
     //writef("DEBUG: start duppage with COW setting ...\n");
-    for (i=0; i < USTACKTOP-BY2PG; i+=BY2PG) {
+    for (i=UTEXT; i < USTACKTOP-BY2PG; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 myduppage(newenvid, VPN(i));
