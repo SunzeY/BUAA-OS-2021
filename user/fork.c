@@ -84,7 +84,7 @@ pgfault(u_int va)
 {
 	u_int *tmp;
     int ret;
-    writef("fork.c:pgfault():\t va:%x\n",va);
+    //writef("fork.c:pgfault():\t va:%x\n",va);
     if ((((Pte*)(*vpt))[VPN(va)]&PTE_COW) == 0) {
         user_panic("User pgfault haddler facing a non-COW page\n");
     }
@@ -214,7 +214,7 @@ fork(void)
     //printf(">>>>>>>>finsh copy and try to set child env<<<<<<<\n");
     //in parent env
     int ret = 0;
-    ret = syscall_mem_alloc(newenvid, UXSTACKTOP-BY2PG, PTE_V | PTE_R | PTE_LIBRARY);
+    ret = syscall_mem_alloc(newenvid, UXSTACKTOP-BY2PG, PTE_V | PTE_R);
     if (ret<0) {
         user_panic("fork alloc mem failed\n");
     }
