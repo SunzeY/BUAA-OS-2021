@@ -675,8 +675,9 @@ void pageout(int va, int context)
     if ((r = page_alloc(&p)) < 0) {
         panic ("page alloc error!");
     }
-
     p->pp_ref++;
+    curenv->env_pgout++;
+    printf("\nEnv:0x%x, va:0x%x, pgcow:%d, pgout:%d\n", curenv->env_id, va, curenv->env_pgcow, curenv->env_pgout);
 
     page_insert((Pde *)context, p, VA2PFN(va), PTE_R);
     printf("pageout:\t@@@___0x%x___@@@  ins a page \n", va);

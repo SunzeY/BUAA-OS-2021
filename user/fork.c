@@ -295,7 +295,7 @@ tfork(void)
     }
     //u_int critical_point = uget_sp();
    // writef("DEBUG: uget_sp is %x\n", critical_point);
-    for (i=0; i < critical_point- BY2PG; i+=BY2PG) {
+    for (i=0; i < critical_point; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 myduppage(newenvid, VPN(i));

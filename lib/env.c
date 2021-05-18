@@ -217,7 +217,7 @@ env_alloc(struct Env **new, u_int parent_id)
 	e->env_id = mkenvid(e);
 	e->env_parent_id = parent_id;
     e->env_status = ENV_RUNNABLE;
-    e->env_runs = 0;
+    //e->env_runs = 0;
 
     /*Step 4: Focus on initializing the sp register and cp0_status of env_tf field, located at this new Env. */
 	e->env_tf.cp0_status = 0x10001004;
@@ -440,9 +440,11 @@ env_destroy(struct Env *e)
 {
     /* Hint: free e. */
     env_free(e);
-
     /* Hint: schedule to run a new environment. */
     if (curenv == e) {
+        printf("envid:%08x\n", e->env_id); 
+        printf("pgcow:%08x\n", e->env_pgcow); 
+        printf("pgout:%08x\n", e->env_pgout);
         curenv = NULL;
         /* Hint:Why this? */
         bcopy((void *)KERNEL_SP - sizeof(struct Trapframe),
@@ -486,7 +488,7 @@ env_run(struct Env *e)
     }
     /*Step 2: Set 'curenv' to the new environment. */
     curenv = e;
-    curenv->env_runs++;
+    //curenv->env_runs++;
 
     /*Step 3: Use lcontext() to switch to its address space. */
     //lcontext(KADDR(curenv->env_cr3));

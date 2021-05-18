@@ -2,6 +2,7 @@
 #include <env.h>
 #include <printf.h>
 
+extern struct Env *curenv;
 extern void handle_int();
 extern void handle_reserved();
 extern void handle_tlb();
@@ -54,7 +55,9 @@ page_fault_handler(struct Trapframe *tf)
     extern struct Env *curenv;
 
     bcopy(tf, &PgTrapFrame, sizeof(struct Trapframe));
-
+    int* instr = tf->pc;
+    curenv->env_pgcow++;
+    printf("\nEnv:0x%x, code:0x%x, pgcow:%d, pgout:%d\n", curenv->env_id, *instr, curenv->env_pgcow, curenv->env_pgout);
     if (tf->regs[29] >= (curenv->env_xstacktop - BY2PG) &&
         tf->regs[29] <= (curenv->env_xstacktop - 1)) {
             tf->regs[29] = tf->regs[29] - sizeof(struct  Trapframe);
