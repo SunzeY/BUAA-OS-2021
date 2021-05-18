@@ -6,7 +6,7 @@
 #define true 1
 #define false 0
 #define GET_PAGE(x) ((x)>>MAX_PAGE)
-
+ 
 //char lastuse[MAX_PHY_PAGE];
 //char map[NUM_OF_PAGE];
 /*
