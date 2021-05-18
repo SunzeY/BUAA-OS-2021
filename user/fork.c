@@ -293,19 +293,19 @@ tfork(void)
     }
     u_int critical_point = uget_sp();
     //writef("DEBUG: start duppage with COW setting ...\n");
-    for (i=0; i < critical_point; i+=BY2PG) {
+    for (i=0; i < USTACKTOP-BY2PG; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 myduppage(newenvid, VPN(i));
             }
     }
-    for (i=critical_point; i < USTACKTOP; i+=BY2PG) {
+    /*for (i=critical_point; i < USTACKTOP; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 duppage(newenvid, VPN(i));
             }
-    }
-    //duppage(newenvid, VPN(USTACKTOP-BY2PG));
+    }*/
+    duppage(newenvid, VPN(USTACKTOP-BY2PG));
     //set_pgfault_handler(pgfault);
     
     //printf(">>>>>>>>finsh copy and try to set child env<<<<<<<\n");
