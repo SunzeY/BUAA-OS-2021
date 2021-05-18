@@ -10,7 +10,7 @@ extern char boutcode[];
 
 void mips_init()
 {
-	printf("init.c:\tmips_init() is called\n");
+	//printf("init.c:\tmips_init() is called\n");
 	mips_detect_memory();
 	
 	mips_vm_init();
@@ -25,10 +25,10 @@ void mips_init()
     //printf("DEBUG: testenv created\n");	
     trap_init();
     
-    printf("DEBUG: trap_init finish\n");	
+    //printf("DEBUG: trap_init finish\n");	
 	kclock_init();
 
-    printf("DEBUG: kclock_init finish\n");	
+    //printf("DEBUG: kclock_init finish\n");	
 	
 	while(1);
 	panic("init.c:\tend of mips_init() reached!");
