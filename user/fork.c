@@ -4,7 +4,12 @@
 #include <mmu.h>
 #include <env.h>
 
-
+extern int get_sp();
+u_int uget_sp(void) {
+    u_int addr = get_sp();
+    addr = ROUNDDOWN(addr, BY2PG);
+    return addr;
+}
 /* ----------------- help functions ---------------- */
 
 /* Overview:
@@ -229,6 +234,97 @@ fork(void)
 	return newenvid;
 }
 
+
+static void
+myduppage(u_int envid, u_int pn)
+{
+	u_int addr;
+	u_int perm;
+
+    addr = pn*BY2PG;
+    
+    perm = ((Pte*)(*vpt))[pn] & 0xfff;
+    /*if (addr==0x407000) {
+        user_panic("DEBUG: perm: %d, %d, %d, %d, %d", perm&PTE_LIBRARY, perm&PTE_V, perm&PTE_R, perm&PTE_COW);
+    }*/
+    if ((perm&PTE_R)==0) {
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup read-only PTE\n");
+        }
+    }
+    else if (perm&PTE_LIBRARY) {
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup LIBARAY PTE\n");
+        }
+    }
+    else if (perm&PTE_COW) {
+        pgfault(addr);
+        perm = ((Pte*)(*vpt))[pn] & 0xfff;
+        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup PTE which has been duplicated before\n");
+        }
+    }
+    else {
+         if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+            user_panic("failed to dup PTE with COW in father env\n");
+         }
+    }
+	//	user_panic("duppage not implemented");
+}
+int
+tfork(void)
+{
+	// Your code here.
+	u_int newenvid;
+	extern struct Env *envs;
+	extern struct Env *env;
+	u_int i;
+    //writef("DEBUG: >>>>>fork_begin\n");
+	//The parent installs pgfault using set_pgfault_handler
+    set_pgfault_handler(pgfault);
+    //writef("DEBUG: >>>>>finsih pgfault\n");
+
+	//alloc a new alloc
+    newenvid = syscall_env_alloc();
+    //writef("DEBUG: >>>>>finsh env_alloc\n");
+    if (newenvid == 0) { //in child env
+        env = &envs[ENVX(syscall_getenvid())];
+        return 0;
+    }
+    u_int critical_point = uget_sp();
+    //writef("DEBUG: start duppage with COW setting ...\n");
+    for (i=0; i < critical_point; i+=BY2PG) {
+        if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
+            (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
+                myduppage(newenvid, VPN(i));
+            }
+    }
+    for (i=critical_point; i < USTACKTOP; i+=BY2PG) {
+        if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
+            (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
+                duppage(newenvid, VPN(i));
+            }
+    }
+    //duppage(newenvid, VPN(USTACKTOP-BY2PG));
+    //set_pgfault_handler(pgfault);
+    
+    //printf(">>>>>>>>finsh copy and try to set child env<<<<<<<\n");
+    //in parent env
+    int ret = 0;
+    ret = syscall_mem_alloc(newenvid, UXSTACKTOP-BY2PG, PTE_V | PTE_R);
+    if (ret<0) {
+        user_panic("fork alloc mem failed\n");
+    }
+    ret = syscall_set_pgfault_handler(newenvid, __asm_pgfault_handler, UXSTACKTOP);
+    if (ret<0) {
+        user_panic("fork set pgfault_handler failed\n");
+    }
+    ret = syscall_set_env_status(newenvid, ENV_RUNNABLE);
+    if (ret<0) {
+        user_panic("fork set status failed\n");
+    }
+	return newenvid;
+}
 // Challenge!
 int
 sfork(void)
