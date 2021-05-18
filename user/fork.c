@@ -280,6 +280,7 @@ tfork(void)
 	extern struct Env *envs;
 	extern struct Env *env;
 	u_int i;
+    u_int critical_point = uget_sp();
     //writef("DEBUG: >>>>>fork_begin\n");
 	//The parent installs pgfault using set_pgfault_handler
     set_pgfault_handler(pgfault);
@@ -292,15 +293,15 @@ tfork(void)
         env = &envs[ENVX(syscall_getenvid())];
         return 0;
     }
-    u_int critical_point = uget_sp();
-    //writef("DEBUG: start duppage with COW setting ...\n");
-    for (i=UTEXT; i < critical_point; i+=BY2PG) {
+    //u_int critical_point = uget_sp();
+    //writef("DEBUG: uget_sp is %x\n", critical_point);
+    for (i=UTEXT; i < critical_point-BY2PG; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 myduppage(newenvid, VPN(i));
             }
     }
-    for (i=critical_point; i < USTACKTOP; i+=BY2PG) {
+    for (i=critical_point-BY2PG; i < USTACKTOP; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 duppage(newenvid, VPN(i));
