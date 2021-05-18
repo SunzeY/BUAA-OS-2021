@@ -202,8 +202,8 @@ fork(void)
         env = &envs[ENVX(syscall_getenvid())];
         return 0;
     }
-    writef("DEBUG: start duppage with COW setting ...\n");
-    for (i=UTEXT; i < USTACKTOP; i+=BY2PG) {
+    //writef("DEBUG: start duppage with COW setting ...\n");
+    for (i=0; i < USTACKTOP; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
                 duppage(newenvid, VPN(i));
