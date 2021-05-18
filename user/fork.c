@@ -298,7 +298,7 @@ tfork(void)
     for (i=0; i < USTACKTOP-BY2PG; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
-                myduppage(newenvid, VPN(i));
+                duppage(newenvid, VPN(i));
             }
     }
     /*for (i=critical_point-BY2PG; i < USTACKTOP; i+=BY2PG) {
