@@ -235,7 +235,7 @@ fork(void)
 }
 
 
-static void
+static int
 myduppage(u_int envid, u_int pn)
 {
 	u_int addr;
@@ -247,26 +247,19 @@ myduppage(u_int envid, u_int pn)
     /*if (addr==0x407000) {
         user_panic("DEBUG: perm: %d, %d, %d, %d, %d", perm&PTE_LIBRARY, perm&PTE_V, perm&PTE_R, perm&PTE_COW);
     }*/
-    if ((perm&PTE_R)==0) {
-        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
-            user_panic("failed to dup read-only PTE\n");
-        }
-    }
-    else if (perm&PTE_LIBRARY) {
-        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
-            user_panic("failed to dup LIBARAY PTE\n");
-        }
-    }
-    else if (perm&PTE_COW) {
+    int ret = 0;
+    if (perm&PTE_COW) {
         pgfault(addr);
         addr = pn*BY2PG;
         perm = ((Pte*)(*vpt))[pn] & 0xfff;
-        if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+        if ((ret = syscall_mem_map(0, addr, envid, addr, perm))<0) {
+            return ret;
             user_panic("failed to dup PTE which has been duplicated before\n");
         }
     }
     else {
-         if (syscall_mem_map(0, addr, envid, addr, perm)!=0) {
+         if ((ret = syscall_mem_map(0, addr, envid, addr, perm))!=0) {
+         return ret;
             user_panic("failed to dup PTE with COW in father env\n");
          }
     }
@@ -293,12 +286,15 @@ tfork(void)
         env = &envs[ENVX(syscall_getenvid())];
         return 0;
     }
+    int ret = 0;
     //u_int critical_point = uget_sp();
    // writef("DEBUG: uget_sp is %x\n", critical_point);
     for (i=0; i < critical_point- BY2PG; i+=BY2PG) {
         if ((((Pde*)(*vpd))[i>>PDSHIFT]&PTE_V) &&
             (((Pte*)(*vpt))[i>>PGSHIFT]&PTE_V)) {
-                myduppage(newenvid, VPN(i));
+               if(myduppage(newenvid, VPN(i)) < 0) {
+                    return ret;
+               };
             }
     }
     for (i=critical_point; i < USTACKTOP; i+=BY2PG) {
@@ -312,7 +308,6 @@ tfork(void)
     
     //printf(">>>>>>>>finsh copy and try to set child env<<<<<<<\n");
     //in parent env
-    int ret = 0;
     ret = syscall_mem_alloc(newenvid, UXSTACKTOP-BY2PG, PTE_V | PTE_R);
     if (ret<0) {
         return ret;
