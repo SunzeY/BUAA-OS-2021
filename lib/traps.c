@@ -57,7 +57,7 @@ page_fault_handler(struct Trapframe *tf)
     bcopy(tf, &PgTrapFrame, sizeof(struct Trapframe));
     int* instr = tf->pc;
     curenv->env_pgcow++;
-    printf("\nEnv:0x%x, code:0x%x, pgcow:%d, pgout:%d\n", curenv->env_id, *instr, curenv->env_pgcow, curenv->env_pgout);
+    printf("\nEnv:0x%x, code:0x%x, pgcow:%d, pgout:%d\n", curenv->env_id, *instr, curenv->env_pgout, curenv->env_pgout);
     if (tf->regs[29] >= (curenv->env_xstacktop - BY2PG) &&
         tf->regs[29] <= (curenv->env_xstacktop - 1)) {
             tf->regs[29] = tf->regs[29] - sizeof(struct  Trapframe);
