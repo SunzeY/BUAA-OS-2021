@@ -464,6 +464,40 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
 int sys_write_dev(int sysno, u_int va, u_int dev, u_int len)
 {
         // Your code here
+        u_int console_addr = 0x10000000;
+        u_int IDE_addr = 0x13000000;
+        u_int rtc_addr = 0x15000000;
+        u_int console_len = 0x20;
+        u_int IDE_len = 0x4200;
+        u_int rtc_len = 0x200;
+
+        u_int dst_va = dev + 0xa0000000;
+        int within_limit = 0;
+
+        /* in console */
+        if(console_addr <= dev && dev+len < console_addr + console_len) {
+            within_limit = 1;
+        }
+
+        /* in IDE */
+        if(IDE_addr <= dev && dev+len < IDE_addr + IDE_len) {
+            within_limit = 1;
+        }
+
+        /* in rtc */
+        if(rtc_addr <= dev && dev+len < rtc_addr + rtc_len) {
+            within_limit = 1;
+        }
+        
+        /* out of limitation */
+        if (within_limit != 1) {
+            return -E_INVAL;
+        }
+        
+        /* normal behavior */
+        bcopy((void*)va, (void*)dst_va, len);
+
+        return 0;
 }
 
 /* Overview:
@@ -485,4 +519,38 @@ int sys_write_dev(int sysno, u_int va, u_int dev, u_int len)
 int sys_read_dev(int sysno, u_int va, u_int dev, u_int len)
 {
         // Your code here
+        u_int console_addr = 0x10000000;
+        u_int IDE_addr = 0x13000000;
+        u_int rtc_addr = 0x15000000;
+        u_int console_len = 0x20;
+        u_int IDE_len = 0x4200;
+        u_int rtc_len = 0x200;
+
+        u_int dst_va = dev + 0xa0000000;
+        int within_limit = 0;
+
+        /* in console */
+        if(console_addr <= dev && dev+len < console_addr + console_len) {
+            within_limit = 1;
+        }
+
+        /* in IDE */
+        if(IDE_addr <= dev && dev+len < IDE_addr + IDE_len) {
+            within_limit = 1;
+        }
+
+        /* in rtc */
+        if(rtc_addr <= dev && dev+len < rtc_addr + rtc_len) {
+            within_limit = 1;
+        }
+        
+        /* out of limitation */
+        if (within_limit != 1) {
+            return -E_INVAL;
+        }
+        
+        /* normal behavior */
+        bcopy((void*)dst_va, (void*)va, len);
+
+        return 0;
 }
