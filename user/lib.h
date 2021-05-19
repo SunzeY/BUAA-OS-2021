@@ -42,7 +42,6 @@ void user_bcopy(const void *src, void *dst, size_t len);
 void user_bzero(void *v, u_int n);
 //////////////////////////////////////////////////syscall_lib
 extern int msyscall(int, int, int, int, int, int);
-//extern int msyscall(int, int, ...);
 
 void syscall_putchar(char ch);
 u_int syscall_getenvid(void);
@@ -122,7 +121,7 @@ int	stat(const char *path, struct Stat *);
 // file.c
 int	open(const char *path, int mode);
 int	read_map(int fd, u_int offset, void **blk);
-int	delete(const char *path);
+int	remove(const char *path);
 int	ftruncate(int fd, u_int size);
 int	sync(void);
 
