@@ -114,8 +114,8 @@
 			((listelm)->field.le_next)->field.le_prev =         \
 			&LIST_NEXT((elm), field);                       \
 		}                                                       \
-		(listelm)->field.le_next = (elm);                          \
-		(elm)->field.le_prev = &LIST_NEXT((listelm), field);    \	
+		(listelm)->field.le_next = (elm);                         
+		(elm)->field.le_prev = &LIST_NEXT((listelm), field);     \
 	} while (0)
         // Note: assign a to b <==> a = b
         //Step 1, assign elm.next to listelem.next.
@@ -152,7 +152,7 @@
  * The "field" name is the link element as above. You can refer to LIST_INSERT_HEAD.
  * Note: this function has big differences with LIST_INSERT_HEAD !
  */
-#define LIST_INSERT_TAIL(head, elm, field) do {       \                          
+#define LIST_INSERT_TAIL(head, elm, field) do {       \                
     if (LIST_FIRST(head) == NULL) \
         LIST_INSERT_HEAD(head, elm, field); \
     else { \
