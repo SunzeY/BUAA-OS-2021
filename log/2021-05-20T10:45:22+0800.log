@@ -1,0 +1,73 @@
+Autotest: Begin at 2021年 05月 20日 星期四 10:45:22 CST
+[47;33m >>>>>>>>> Beginning test part1 >>>>>>>>> [0m
+
+
+Begin build at 2021年 05月 20日 星期四 10:45:24 CST
+Cleanning the project.................
+
+for d in boot drivers init lib mm user fs;	\
+		do					\
+			make --directory=$d clean; \
+		done; \
+	rm -rf *.o *~ gxemul/vmlinux
+make[1]: Entering directory `/usr/src/workdir/boot'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/boot'
+make[1]: Entering directory `/usr/src/workdir/drivers'
+for d in gxconsole; \
+		do				\
+			make --directory=$d clean; \
+		done
+make[2]: Entering directory `/usr/src/workdir/drivers/gxconsole'
+rm -rf *.o *~
+make[2]: Leaving directory `/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory `/usr/src/workdir/drivers'
+make[1]: Entering directory `/usr/src/workdir/init'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/init'
+make[1]: Entering directory `/usr/src/workdir/lib'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/lib'
+make[1]: Entering directory `/usr/src/workdir/mm'
+rm -rf *~ *.o
+make[1]: Leaving directory `/usr/src/workdir/mm'
+make[1]: Entering directory `/usr/src/workdir/user'
+rm -rf *~ *.o *.b.c *.x *.b
+make[1]: Leaving directory `/usr/src/workdir/user'
+make[1]: Entering directory `/usr/src/workdir/fs'
+rm -rf *~ *.o *.b.c *.b *.x
+make[1]: Leaving directory `/usr/src/workdir/fs'
+
+Building the project..................
+
+make --directory=boot
+make[1]: Entering directory `/usr/src/workdir/boot'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include/ -c start.S 
+make[1]: Leaving directory `/usr/src/workdir/boot'
+make --directory=drivers
+make[1]: Entering directory `/usr/src/workdir/drivers'
+make --directory=gxconsole
+make[2]: Entering directory `/usr/src/workdir/drivers/gxconsole'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000   -c -o console.o console.c
+make[2]: Leaving directory `/usr/src/workdir/drivers/gxconsole'
+make[1]: Leaving directory `/usr/src/workdir/drivers'
+make --directory=init
+make[1]: Entering directory `/usr/src/workdir/init'
+/OSLAB/compiler/usr/bin/mips_4KC-gcc -O -G 0 -mno-abicalls -fno-builtin -Wa,-xgot -Wall -fPIC -march=r3000 -I../include -c init.c
+In file included from ../include/pmap.h:5,
+                 from init.c:2:
+../include/queue.h:118: error: parse error before '->' token
+In file included from ../include/pmap.h:5,
+                 from init.c:2:
+../include/queue.h:155:55: warning: backslash and newline separated by space
+In file included from ../include/env.h:7,
+                 from init.c:3:
+../include/queue.h:155:55: warning: backslash and newline separated by space
+make[1]: Leaving directory `/usr/src/workdir/init'
+make[1]: *** [init.o] Error 1
+make: *** [init] Error 2
+Compile Error!
+
+End build at 2021年 05月 20日 星期四 10:45:26 CST
+[31m[01m[ There is something wrong with your vmlinux. ][0m
+[33m[01m[ You got 0 (of 100) this time. 2021年 05月 20日 星期四 10:45:26 CST ][0m
