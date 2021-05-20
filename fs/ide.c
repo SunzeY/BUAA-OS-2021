@@ -105,11 +105,11 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
         if (syscall_write_dev((u_int)&cur_offset, dev, 4)<0) {
             user_panic("IDE_write_error when setting offset!\n");
         }
-        if (syscall_write_dev((u_int)(src+offset), dev+0x4000, 0x200)<0) {
-            user_panic("IDE_write_error when writing data!\n");
-        }
         if (syscall_write_dev((u_int)&write_mod, dev+0x20, 1)<0) {
             user_panic("IDE_write_error when setting write_mod!\n");
+        }
+        if (syscall_write_dev((u_int)(src+offset), dev+0x4000, 0x200)<0) {
+            user_panic("IDE_write_error when writing data!\n");
         }
         status = 0;
         if (syscall_read_dev((u_int)&status, dev+0x30, 1)<0) {
