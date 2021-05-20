@@ -21,6 +21,8 @@
 // 	If error occurred during read the IDE disk, panic. 
 // 	
 // Hint: use syscalls to access device registers and buffers
+int syscall_write_dev(u_int va, u_int dev, u_int len);
+int syscall_read_dev(u_int va, u_int dev, u_int len);
 void
 ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
 {
