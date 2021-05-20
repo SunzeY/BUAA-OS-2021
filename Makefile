@@ -50,4 +50,10 @@ run: all
 test: all	
 	/OSLAB/gxemul -E testmips -C R3000 -M 64 gxemul/vmlinux -V
 
+run_fs: all	
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 -d gxemul/fs.img gxemul/vmlinux
+
+test_fs: all	
+	/OSLAB/gxemul -E testmips -C R3000 -M 64 -d gxemul/fs.img gxemul/vmlinux -V
+
 include include.mk

@@ -475,17 +475,17 @@ int sys_write_dev(int sysno, u_int va, u_int dev, u_int len)
         int within_limit = 0;
 
         /* in console */
-        if(console_addr <= dev && dev+len < console_addr + console_len) {
+        if(console_addr <= dev && dev+len <= console_addr + console_len) {
             within_limit = 1;
         }
 
         /* in IDE */
-        if(IDE_addr <= dev && dev+len < IDE_addr + IDE_len) {
+        if(IDE_addr <= dev && dev+len <= IDE_addr + IDE_len) {
             within_limit = 1;
         }
 
         /* in rtc */
-        if(rtc_addr <= dev && dev+len < rtc_addr + rtc_len) {
+        if(rtc_addr <= dev && dev+len <= rtc_addr + rtc_len) {
             within_limit = 1;
         }
         
@@ -530,22 +530,23 @@ int sys_read_dev(int sysno, u_int va, u_int dev, u_int len)
         int within_limit = 0;
 
         /* in console */
-        if(console_addr <= dev && dev+len < console_addr + console_len) {
+        if(console_addr <= dev && dev+len <= console_addr + console_len) {
             within_limit = 1;
         }
 
         /* in IDE */
-        if(IDE_addr <= dev && dev+len < IDE_addr + IDE_len) {
+        if(IDE_addr <= dev && dev+len <= IDE_addr + IDE_len) {
             within_limit = 1;
         }
 
         /* in rtc */
-        if(rtc_addr <= dev && dev+len < rtc_addr + rtc_len) {
+        if(rtc_addr <= dev && dev+len <= rtc_addr + rtc_len) {
             within_limit = 1;
         }
         
         /* out of limitation */
         if (within_limit != 1) {
+            printf("addr out of limitatin ad %x - %x", dev, dev+len);
             return -E_INVAL;
         }
         

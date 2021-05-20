@@ -223,7 +223,7 @@ struct File *create_file(struct File *dirf) {
     // Step2: Find an unused pointer.
     dirblk = (struct File*)(disk[bno].data);
     for (i=0; i<FILE2BLK; ++i) {
-        if (dirblk[i].f_name[0]==0) {
+        if (dirblk[i].f_name[0]=='\0') {
             return &dirblk[i];
         }
     }

@@ -50,6 +50,7 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
         if (syscall_write_dev((u_int)&read_mod, dev+0x20, 1)<0) {
             user_panic("IDE_read_error when setting read_mod!\n");
         }
+        status = 0;
         if (syscall_read_dev((u_int)&status, dev+0x30, 1)<0) {
             user_panic("IDE_read_error when getting IDE status!\n");
         }
@@ -57,7 +58,7 @@ ide_read(u_int diskno, u_int secno, void *dst, u_int nsecs)
         if (status==0) {
             user_panic("IDE_read_error for IDE failed!\n");
         }
-        if (syscall_read_dev((u_int)(dst+offset), dev+0x400, 0x200)<0) {
+        if (syscall_read_dev((u_int)(dst+offset), dev+0x4000, 0x200)<0) {
             user_panic("IDE_read_error when reading data!\n");
         }
 
@@ -104,18 +105,19 @@ ide_write(u_int diskno, u_int secno, void *src, u_int nsecs)
         if (syscall_write_dev((u_int)&cur_offset, dev, 4)<0) {
             user_panic("IDE_write_error when setting offset!\n");
         }
+        if (syscall_write_dev((u_int)(src+offset), dev+0x4000, 0x200)<0) {
+            user_panic("IDE_write_error when writing data!\n");
+        }
         if (syscall_write_dev((u_int)&write_mod, dev+0x20, 1)<0) {
             user_panic("IDE_write_error when setting write_mod!\n");
         }
+        status = 0;
         if (syscall_read_dev((u_int)&status, dev+0x30, 1)<0) {
             user_panic("IDE_write_error when getting IDE status!\n");
         }
 
         if (status==0) {
             user_panic("IDE_write_error for IDE failed!\n");
-        }
-        if (syscall_write_dev((u_int)(src+offset), dev+0x400, 0x200)<0) {
-            user_panic("IDE_write_error when writing data!\n");
         }
 
         offset += 0x200;
