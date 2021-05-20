@@ -153,7 +153,7 @@ read_block(u_int blockno, void **blk, u_int *isnew)
 			*isnew = 1;
 		}
 		syscall_mem_alloc(0, va, PTE_V | PTE_R);
-        writef("DEBUG:>>>>>>>>>>>\n");
+        // writef("DEBUG:>>>>>>>>>>>\n");
 		ide_read(0, blockno * SECT2BLK, (void *)va, SECT2BLK);
 	}
 
@@ -272,7 +272,7 @@ read_super(void)
 {
 	int r;
 	void *blk;
-    writef("DEBUG:reading_super...\n");
+    // writef("DEBUG:reading_super...\n");
 	// Step 1: read super block.
 	if ((r = read_block(1, &blk, 0)) < 0) {
 		user_panic("cannot read superblock: %e", r);
@@ -281,7 +281,7 @@ read_super(void)
 	super = blk;
     
 	// Step 2: Check fs magic nunber.
-    writef("DEBUG:checing super.magic\n");
+    // writef("DEBUG:checing super.magic\n");
 	if (super->s_magic != FS_MAGIC) {
 		user_panic("bad file system magic number %x %x", super->s_magic, FS_MAGIC);
 	}
