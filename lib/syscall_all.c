@@ -546,7 +546,7 @@ int sys_read_dev(int sysno, u_int va, u_int dev, u_int len)
         
         /* out of limitation */
         if (within_limit != 1) {
-            printf("addr out of limitatin ad %x - %x", dev, dev+len);
+            //printf("addr out of limitatin ad %x - %x", dev, dev+len);
             return -E_INVAL;
         }
         
