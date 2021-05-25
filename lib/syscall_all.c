@@ -37,8 +37,8 @@ int sys_read_str(int sysno, int buf, int secno) {
        sys_write_dev(a, &c, 0x10000000, 1);
     }
     buff[n] = '\0';
-    printf("%s\n", buff);
-    printf("%s\n",(char*)buf);
+    //printf("%s\n", buff);
+    //printf("%s\n",(char*)buf);
     //sys_write_dev((void*)buff, 0x13000000, )
     return n;
 }
