@@ -461,6 +461,29 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
  *	|    rtc     | 0x15000000 | 0x200  |
  *	* ---------------------------------*
  */
+int sys_get_time(int sysno) {
+    int a = 1;
+    void* p;
+    p = &a;
+    u_int add = 0xb5000000+0x0010;
+    bcopy((void*)p, (void*)(add-0x0010), 1);
+    int b = 0;
+    int *bt = 0;
+    bt = &b;
+    
+    /*bcopy((void*)(add), (void*)bt, 1);
+    printf(">>>>%d\n", *((int*)bt));
+    bcopy((void*)(add), (void*)bt, 2);
+    printf(">>>>%d\n", *((int*)bt));
+    bcopy((void*)(add), (void*)bt, 4);
+    printf(">>>>%d\n", *((int*)bt));
+    bcopy((void*)(add), (void*)bt, 8);
+    printf(">>>>%d\n", *((int*)bt));
+    //panic("reach here, with a\n");
+    //bcopy((void*)add,(void*) a, 4);*/
+    return *((int*) add);
+}
+
 int sys_write_dev(int sysno, u_int va, u_int dev, u_int len)
 {
         // Your code here
