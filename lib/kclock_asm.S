@@ -25,3 +25,13 @@ setup_c0_status STATUS_CU0|0x1001 0
 
 	nop
 END(set_timer)
+
+LAEF(set_console)
+
+	li t0, 0x01
+	sb t0, 0xb5000100
+	sw	sp, KERNEL_SP
+setup_c0_status STATUS_CU0|STATUSF_IP2|0X1 0
+	jr ra
+    nop
+ END(set_console)
