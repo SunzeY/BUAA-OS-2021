@@ -24,18 +24,21 @@ int sys_read_str(int sysno, int buf, int secno) {
     char* buff = (char*) buf;
     char c = '\0';
     int n = 0;
+    int a = 1;
     while (c!='\r') {
         c = 0;
         while (c==0) {
-            int r = sys_read_dev(&c, 0x10000000, 1);
+            int r = sys_read_dev(a, &c, 0x10000000, 1);
             if (r<0) {
-                //user_panic("UgetStr error!\n");
+                panic("UgetStr error!\n");
             }
         }
         buff[n++] = c;
-       sys_write_dev(&c, 0x10000000, 1);
+       sys_write_dev(a, &c, 0x10000000, 1);
     }
     buff[n] = '\0';
+    printf("%s\n", buff);
+    printf("%s\n",(char*)buf);
     //sys_write_dev((void*)buff, 0x13000000, )
     return n;
 }
@@ -589,7 +592,7 @@ int sys_read_dev(int sysno, u_int va, u_int dev, u_int len)
         
         /* out of limitation */
         if (within_limit != 1) {
-            //printf("addr out of limitatin ad %x - %x", dev, dev+len);
+            printf("addr out of limitatin ad %x - %x", dev, dev+len);
             return -E_INVAL;
         }
         
