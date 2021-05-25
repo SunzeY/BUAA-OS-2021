@@ -20,6 +20,7 @@ extern struct Env *env;
 #include <stdarg.h>
 //#define		LP_MAX_BUF	80
 
+int syscall_get_time();
 void user_lp_Print(void (*output)(void *, const char *, int),
 				   void *arg,
 				   const char *fmt,

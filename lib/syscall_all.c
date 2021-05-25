@@ -461,6 +461,12 @@ int sys_ipc_can_send(int sysno, u_int envid, u_int value, u_int srcva,
  *	|    rtc     | 0x15000000 | 0x200  |
  *	* ---------------------------------*
  */
+int sys_get_time(int sysno) {
+    int* a;
+    bcopy(0x15000000 + 0x0010, a, 4);
+    return *a;
+}
+
 int sys_write_dev(int sysno, u_int va, u_int dev, u_int len)
 {
         // Your code here
