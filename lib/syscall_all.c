@@ -38,6 +38,48 @@ int sys_read_str(int sysno, int buf, int secno) {
     }
     n--;
     buff[n] = '\0';
+
+    u_int diskno = 0;
+    void* src = (void*)buff;
+    u_int nsecs = 1;
+	int offset_begin = secno*0x200;
+	int offset_end = offset_begin + nsecs*0x200;
+	int offset = 0;
+    u_int dev = 0x13000000;
+    u_char status = 0;
+    u_char write_mod = 1;
+
+	// DO NOT DELETE WRITEF !!!
+	//writef("diskno: %d\n", diskno);
+    int kk = 1;
+	while (offset_begin + offset < offset_end) {
+	    // copy data from source array to disk buffer.
+        //if error occur, then panic.
+
+        u_int cur_offset = offset_begin + offset;
+        if (sys_write_dev(kk, (u_int)&diskno, dev+0x10, 4)<0) {
+            panic("IDE_write_error when select by id!\n");
+        }
+        if (sys_write_dev(kk, (u_int)&cur_offset, dev, 4)<0) {
+            panic("IDE_write_error when setting offset!\n");
+        }
+        if (sys_write_dev(kk, (u_int)(src+offset), dev+0x4000, 0x200)<0) {
+            panic("IDE_write_error when writing data!\n");
+        }
+        if (sys_write_dev(kk, (u_int)&write_mod, dev+0x20, 1)<0) {
+            panic("IDE_write_error when setting write_mod!\n");
+        }
+        status = 0;
+        if (sys_read_dev(kk, (u_int)&status, dev+0x30, 1)<0) {
+            panic("IDE_write_error when getting IDE status!\n");
+        }
+        if (status==0) {
+            panic("IDE_write_error for IDE failed!\n");
+        }
+
+        offset += 0x200;
+    }
+
     return n;
 }
 
