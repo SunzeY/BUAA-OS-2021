@@ -104,3 +104,6 @@ int syscall_get_time() {
     return msyscall(SYS_time, 0, 0, 0, 0, 0);
 }
 
+int syscall_read_str(char *buf, int secno) {
+    return msyscall(SYS_str, (int)buf, secno, 0, 0, 0);
+}

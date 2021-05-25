@@ -20,6 +20,26 @@ void sys_putchar(int sysno, int c, int a2, int a3, int a4, int a5)
 	return ;
 }
 
+int sys_read_str(int sysno, int buf, int secno) {
+    char* buff = (char*) buf;
+    char c = '\0';
+    int n = 0;
+    while (c!='\r') {
+        c = 0;
+        while (c==0) {
+            int r = sys_read_dev(&c, 0x10000000, 1);
+            if (r<0) {
+                //user_panic("UgetStr error!\n");
+            }
+        }
+        buff[n++] = c;
+       sys_write_dev(&c, 0x10000000, 1);
+    }
+    buff[n] = '\0';
+    //sys_write_dev((void*)buff, 0x13000000, )
+    return n;
+}
+
 /* Overview:
  * 	This function enables you to copy content of `srcaddr` to `destaddr`.
  *
