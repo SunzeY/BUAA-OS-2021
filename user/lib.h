@@ -13,7 +13,7 @@ extern void libmain();
 extern void exit();
 
 extern struct Env *env;
-
+int syscall_get_time();
 
 #define USED(x) (void)(x)
 //////////////////////////////////////////////////////printf
