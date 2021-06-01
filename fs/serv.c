@@ -94,15 +94,15 @@ void serve_create(u_int envid, struct Fsreq_create *rq) {
 	user_bcopy(rq->req_path, path, MAXPATHLEN);
 	path[MAXPATHLEN - 1] = 0;
    if (rq->isdir==0) {
-        if(r = file_create((char*)path, &f)<0) {
+        if((r = file_create((char*)path, &f))<0) {
             if (r!=-E_FILE_EXISTS) {
                 ipc_send(envid, -E_DIR_NOT_EXIST, 0, 0);
             }
 		    else ipc_send(envid, r, 0, 0);
             return;
         }
-        if (r = file_open((char*)path, &f) < 0) {
-            user_panic("DEBUG:create new file failed!\n");
+        if ((r = file_open((char*)path, &f)) < 0) {
+            //iuser_panic("DEBUG:create new file failed!\n");
         }
    }
    if (rq->isdir==1) {
