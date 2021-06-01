@@ -105,6 +105,7 @@ void serve_create(u_int envid, struct Fsreq_create *rq) {
             return;
         }
    }
+   ipc_send(envid, 0, 0, 0);
 }
 
 // Serve requests, sending responses back to envid.
