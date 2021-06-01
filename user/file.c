@@ -73,6 +73,23 @@ open(const char *path, int mode)
     return fd2num(fd);
 
 }
+int user_create(char* path, int isdir) {
+    
+    int r;
+    struct Fd* fd;
+
+    r = fd_alloc(&fd);
+    if (r < 0) {
+        return r;
+    }
+
+    r = fsipc_open(path, isdir, fd);
+    if (r < 0) {
+        return r;
+    }
+
+    return 0;
+}
 
 // Overview:
 //	Close a file descriptor

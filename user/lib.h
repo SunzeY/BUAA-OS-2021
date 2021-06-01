@@ -13,6 +13,7 @@ extern void libmain();
 extern void exit();
 
 extern struct Env *env;
+int user_create(char* path, int isdir);
 
 
 #define USED(x) (void)(x)

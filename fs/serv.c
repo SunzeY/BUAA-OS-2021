@@ -87,6 +87,26 @@ open_lookup(u_int envid, u_int fileid, struct Open **po)
 	return 0;
 }
 
+void serve_create(u_int envid, struct Fsreq_create *rq) {
+   struct File* f;
+   int r = 0;
+	u_char path[MAXPATHLEN];
+	user_bcopy(rq->req_path, path, MAXPATHLEN);
+	path[MAXPATHLEN - 1] = 0;
+   if (rq->isdir==0) {
+        if(r = file_create((char*)path, &f)<0) {
+		    ipc_send(envid, r, 0, 0);
+            return;
+        }
+   }
+   if (rq->isdir==1) {
+        if(r = file_create((char*)path, &f)<0) {
+		    ipc_send(envid, r, 0, 0);
+            return;
+        }
+   }
+}
+
 // Serve requests, sending responses back to envid.
 // To send a result back, ipc_send(envid, r, 0, 0).
 // To include a page, ipc_send(envid, r, srcva, perm).
@@ -292,7 +312,8 @@ serve(void)
 			case FSREQ_SYNC:
 				serve_sync(whom);
 				break;
-
+            case FSREQ_CREATE:
+                serve_create(whom, (struct Fsreq_create*)REQVA);
 			default:
 				writef("Invalid request code %d from %08x\n", whom, req);
 				break;

@@ -53,6 +53,20 @@ fsipc_open(const char *path, u_int omode, struct Fd *fd)
 	return fsipc(FSREQ_OPEN, req, (u_int)fd, &perm);
 }
 
+int fsipc_create(const char *path, u_int isdir, struct Fd* fd) {
+    u_int perm;
+    struct Fsreq_create *req;
+
+    req = (struct Fsreq_create*)fsipcbuf;
+
+    if (strlen(path) >= MAXPATHLEN) {
+        return -E_BAD_PATH;
+    }
+	strcpy((char *)req->req_path, path);
+	req->isdir = isdir;
+	return fsipc(FSREQ_CREATE, req, (u_int)fd, &perm);
+}
+
 // Overview:
 //	Make a map-block request to the file server. We send the fileid and
 //	the (byte) offset of the desired block in the file, and the server sends
