@@ -83,7 +83,7 @@ int user_create(char* path, int isdir) {
         return r;
     }
 
-    r = fsipc_open(path, isdir, fd);
+    r = fsipc_create(path, isdir, fd);
     if (r < 0) {
         return r;
     }

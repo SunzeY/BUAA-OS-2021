@@ -98,6 +98,9 @@ void serve_create(u_int envid, struct Fsreq_create *rq) {
 		    ipc_send(envid, r, 0, 0);
             return;
         }
+        if (r = file_open((char*)path, &f) < 0) {
+            user_panic("DEBUG:create new file failed!\n");
+        }
    }
    if (rq->isdir==1) {
         if(r = file_create((char*)path, &f)<0) {
