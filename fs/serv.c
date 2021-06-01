@@ -112,8 +112,9 @@ void serve_create(u_int envid, struct Fsreq_create *rq) {
             }
 		    else ipc_send(envid, r, 0, 0);
             return;
-            f->f_type = FTYPE_DIR;
+            //f->f_type = FTYPE_DIR;
         }
+            f->f_type = FTYPE_DIR;
    }
    ipc_send(envid, 0, 0, 0);
 }
