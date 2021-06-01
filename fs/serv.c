@@ -95,7 +95,10 @@ void serve_create(u_int envid, struct Fsreq_create *rq) {
 	path[MAXPATHLEN - 1] = 0;
    if (rq->isdir==0) {
         if(r = file_create((char*)path, &f)<0) {
-		    ipc_send(envid, r, 0, 0);
+            if (r!=-E_FILE_EXISTS) {
+                ipc_send(envid, -E_DIR_NOT_EXIST, 0, 0);
+            }
+		    else ipc_send(envid, r, 0, 0);
             return;
         }
         if (r = file_open((char*)path, &f) < 0) {
