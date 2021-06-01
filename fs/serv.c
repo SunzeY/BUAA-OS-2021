@@ -107,11 +107,11 @@ void serve_create(u_int envid, struct Fsreq_create *rq) {
    }
    if (rq->isdir==1) {
         if(r = file_create((char*)path, &f)<0) {
-            /*if (r!=-E_FILE_EXISTS) {
+            if (r!=-E_FILE_EXISTS) {
                 ipc_send(envid, -E_DIR_NOT_EXIST, 0, 0);
             }
 		    else ipc_send(envid, r, 0, 0);
-            return;*/
+            return;
             ipc_send(envid, 0, 0, 0);
             //f->f_type = FTYPE_DIR;
         }
