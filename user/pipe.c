@@ -59,6 +59,7 @@ pipe(int pfd[2])
 
 	pfd[0] = fd2num(fd0);
 	pfd[1] = fd2num(fd1);
+    // writef("DEBUG: pfd[0]: %d, pfd[1]: %d\n", pfd[0], pfd[1]);
 	return 0;
 
 err3:	syscall_mem_unmap(0, va);
@@ -85,14 +86,15 @@ _pipeisclosed(struct Fd *fd, struct Pipe *p)
 	// everybody left is what fd is.  So the other end of
 	// the pipe is closed.
 	int pfd,pfp,runs;
-    pfd = pageref(fd);
-    pfp = pageref(p);
+    runs = -1;
 
-    if (pfd == pfp) {
-        return 1;
-    } else {
-        return 0;
+    while (runs!=env->env_runs) {
+        runs = env->env_runs;
+        pfd = pageref(fd);
+        pfp = pageref(p);
     }
+
+    return (pfd==pfp) ? 1 : 0;
 
 
 
