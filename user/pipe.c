@@ -85,7 +85,14 @@ _pipeisclosed(struct Fd *fd, struct Pipe *p)
 	// everybody left is what fd is.  So the other end of
 	// the pipe is closed.
 	int pfd,pfp,runs;
-	
+    pfd = pageref(fd);
+    pfp = pageref(p);
+
+    if (pfd == pfp) {
+        return 1;
+    } else {
+        return 0;
+    }
 
 
 
@@ -117,9 +124,20 @@ piperead(struct Fd *fd, void *vbuf, u_int n, u_int offset)
 	// some bytes, return what you have instead of yielding.)
 	// If the pipe is empty and closed and you didn't copy any data out, return 0.
 	// Use _pipeisclosed to check whether the pipe is closed.
-	int i;
+	int i = 0;
 	struct Pipe *p;
-	char *rbuf;
+    char *rbuf;
+    int fd_num = fd2num(fd);
+
+    p = (struct Pipe*)fd2data(fd);
+    while(p->p_rpos>=p->p_wpos && !_pipeisclosed(fd, p)) {
+        syscall_yield();
+    }
+    rbuf = (char*)vbuf; 
+    while (!(p->p_rpos>=p->p_wpos) && i <= n) {
+        rbuf[i++] = p->p_buf[(p->p_rpos++)%BY2PIPE];
+    }
+    return i;
 	
 
 
@@ -137,10 +155,26 @@ pipewrite(struct Fd *fd, const void *vbuf, u_int n, u_int offset)
 	// the data, wait for the pipe to empty and then keep copying.
 	// If the pipe is full and closed, return 0.
 	// Use _pipeisclosed to check whether the pipe is closed.
-	int i;
+	int i = 0;
 	struct Pipe *p;
 	char *wbuf;
-	
+	int fd_num = fd2num(fd);
+    wbuf = (char*)vbuf;
+    p = (struct Pipe*)fd2data(fd);
+    while((p->p_wpos - p->p_rpos < BY2PIPE) || !_pipeisclosed(fd, p)
+            && i < n)
+    {
+        if (p->p_wpos - p->p_rpos < BY2PIPE) {
+            p->p_buf[(p->p_wpos++)%BY2PIPE] = wbuf[i++]; 
+        }
+        if (!_pipeisclosed(fd, p)) {
+            syscall_yield();
+        }
+    }
+    if (!(p->p_wpos - p->p_rpos < BY2PIPE) && _pipeisclosed(fd, p) && i < n) {
+        return 0;
+    }
+    return n;
 
 //	return -E_INVAL;
 	
@@ -162,7 +196,9 @@ pipestat(struct Fd *fd, struct Stat *stat)
 static int
 pipeclose(struct Fd *fd)
 {
-	syscall_mem_unmap(0, fd2data(fd));
+    u_int va = fd2data(fd);
+    syscall_mem_unmap(0, fd);
+	syscall_mem_unmap(0, va);
 	return 0;
 }
 
