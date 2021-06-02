@@ -112,9 +112,9 @@ close(int fdnum)
 		||  (r = dev_lookup(fd->fd_dev_id, &dev)) < 0) {
 		return r;
 	}
-
+	fd_close(fd); 
 	r = (*dev->dev_close)(fd);
-	fd_close(fd);
+//	fd_close(fd);
 	return r;
 }
 
