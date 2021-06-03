@@ -303,6 +303,17 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
     }
     return 0;
 }
+
+/* env_load_icode(for lab6 spawn):
+ */
+int
+env_load_icode(u_char* binary, u_int size, struct Env *e)
+{
+    int entry_point;
+    int r = load_elf(binary, size, &entry_point, e, load_icode_mapper);
+    return r;
+}
+
 /* Overview:
  *  Sets up the the initial stack and program binary for a user process.
  *  This function loads the complete binary image by using elf loader,

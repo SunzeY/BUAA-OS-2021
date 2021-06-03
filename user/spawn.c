@@ -123,9 +123,32 @@ int spawn(char *prog, char **argv)
 		return r;
 	}
 	// Your code begins here
-	// Before Step 2 , You had better check the "target" spawned is a execute bin 
+	// Before Step 2 , You had better check the "target" spawned is a execute bin
+    fd = r;
+    if((r= read(fd, elfbuf, 512)) < 0) {
+        return r;
+    }
+    if (strlen(elfbuf)<4 || !usr_is_elf_format(elfbuf)) {
+        return -E_INVAL;
+    }
+    elf = (Elf32_Ehdr*)elf;
+    if(elf->e_type != 2) {
+        return -E_INVAL;
+    }
+
 	// Step 2: Allocate an env (Hint: using syscall_env_alloc())
+    if ((r=syscall_env_alloc()) < 0) {
+        return r;
+    }
+    else if (r == 0) {
+        return 0;
+    }
+    child_envid = r;
+
 	// Step 3: Using init_stack(...) to initialize the stack of the allocated env
+    r = init_stack(r, argv, &esp);
+    if (r<0) return r;
+
 	// Step 3: Map file's content to new env's text segment
 	//        Hint 1: what is the offset of the text segment in file? try to use objdump to find out.
 	//        Hint 2: using read_map(...)
@@ -136,6 +159,15 @@ int spawn(char *prog, char **argv)
 	// Note2: You can achieve this func in any way ，remember to ensure the correctness
 	//        Maybe you can review lab3 
 	// Your code ends here
+    struct Stat binaryStat;
+    r = fstat(fd, &binaryStat);
+    if (r<0) return r;
+    u_char* binary;
+    r = read_map(fd, 0, &binary);
+    if (r<0) return r;
+    syscall_load_icode(child_envid, binary, binaryStat.st_size);
+    size = binaryStat.st_size;
+    close(fd);
 
 	struct Trapframe *tf;
 	writef("\n::::::::::spawn size : %x  sp : %x::::::::\n",size,esp);

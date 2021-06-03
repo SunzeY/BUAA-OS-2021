@@ -11,7 +11,7 @@ umain(void)
 	writef("testing for dup race...\n");
 	if ((r = pipe(p)) < 0)
 		user_panic("pipe: %e", r);
-	max = 200;
+	max = 20000;
 	if ((r = fork()) < 0)
 		user_panic("fork: %e", r);
 	if (r == 0) {
@@ -62,5 +62,5 @@ umain(void)
 	if (pageref((void*)va) != 3+1)
 		writef("\nchild detected race\n");
 	else
-		writef("\nrace didn't happen\n", max);
+		writef("\nrace didn't happen with pageref %d\n", pageref((void*)va));
 }

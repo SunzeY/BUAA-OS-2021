@@ -86,13 +86,12 @@ _pipeisclosed(struct Fd *fd, struct Pipe *p)
 	// everybody left is what fd is.  So the other end of
 	// the pipe is closed.
 	int pfd,pfp,runs;
-    runs = -1;
 
-    while (runs!=env->env_runs) {
+    do {
         runs = env->env_runs;
         pfd = pageref(fd);
         pfp = pageref(p);
-    }
+    } while (runs != env->env_runs);
 
     return (pfd==pfp) ? 1 : 0;
 
@@ -136,7 +135,7 @@ piperead(struct Fd *fd, void *vbuf, u_int n, u_int offset)
         syscall_yield();
     }
     rbuf = (char*)vbuf; 
-    while (!(p->p_rpos>=p->p_wpos) && i <= n) {
+    while (!(p->p_rpos>=p->p_wpos) && i < n) {
         rbuf[i++] = p->p_buf[(p->p_rpos++)%BY2PIPE];
     }
     return i;
@@ -199,7 +198,7 @@ static int
 pipeclose(struct Fd *fd)
 {
     u_int va = fd2data(fd);
-    //syscall_mem_unmap(0, fd);
+    syscall_mem_unmap(0, fd);
 	syscall_mem_unmap(0, va);
 	return 0;
 }
