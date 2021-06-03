@@ -143,7 +143,7 @@ again:
 			//			and then wait for the right side to finish
 		    r = pipe(p);
             if (r < 0) {
-                user_panic("BUG: in runcmd: pipe: %e\n");
+                user_panic("BUG: in runcmd: pipe: %e\n", r);
             }
             r = fork();
             if (r==0) { //this is child.

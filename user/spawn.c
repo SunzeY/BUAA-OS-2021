@@ -118,9 +118,11 @@ int spawn(char *prog, char **argv)
 	Elf32_Phdr* ph;
 	// Note 0: some variable may be not used,you can cancel them as you like
 	// Step 1: Open the file specified by `prog` (prog is the path of the program)
-	if((r=open(prog, O_RDONLY))<0){
-        //writef("open file %s\n", prog);
-		user_panic("spawn ::open line 102 RDONLY wrong !\n");
+	
+    writef("DEBUG::open file %s\n", prog);
+    if((r=open(prog, O_RDONLY))<0){
+        //writef("DEBUG::open file %s\n", prog);
+		//user_panic("spawn ::open line 102 RDONLY wrong !  with file name: %s\n", prog);
 		return r;
 	}
 	// Your code begins here
@@ -175,7 +177,10 @@ int spawn(char *prog, char **argv)
 	tf = &(envs[ENVX(child_envid)].env_tf);
 	tf->pc = UTEXT;
 	tf->regs[29]=esp;
-
+    
+    /*if (syscall_set_pgfault_handler(child_envid, __asm_pgfault_handler, UXSTACKTOP)<0) {
+        //writef("cannot set pagefault_handler\n");
+    }*/
 
 	// Share memory
 	u_int pdeno = 0;
