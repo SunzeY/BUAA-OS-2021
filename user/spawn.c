@@ -119,10 +119,10 @@ int spawn(char *prog, char **argv)
 	// Note 0: some variable may be not used,you can cancel them as you like
 	// Step 1: Open the file specified by `prog` (prog is the path of the program)
 	
-    writef("DEBUG::open file %s\n", prog);
+    // writef("DEBUG::open file %s\n", prog);
     if((r=open(prog, O_RDONLY))<0){
         //writef("DEBUG::open file %s\n", prog);
-		//user_panic("spawn ::open line 102 RDONLY wrong !  with file name: %s\n", prog);
+		user_panic("spawn ::open line 102 RDONLY wrong!\n");
 		return r;
 	}
 	// Your code begins here
