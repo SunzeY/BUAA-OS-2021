@@ -106,6 +106,10 @@ again:
 			}
 			// Your code here -- open t for readinig,
             fd = open(t, O_RDONLY);
+            if (r<0) {
+                writef("case '<' : open t failed\n");
+                exit();
+            }
 
 			// dup it onto fd 0, and then close the fd you got.
             dup(fd, 0);
@@ -119,6 +123,10 @@ again:
 			}
 			// Your code here -- open t for writing,
             fd = open(t, O_WRONLY);
+            if (r<0) {
+                writef("case '>' : open t failed\n");
+                exit();
+            }
 
 			// dup it onto fd 1, and then close the fd you got.
 			dup(fd, 1);
@@ -146,6 +154,10 @@ again:
                 user_panic("BUG: in runcmd: pipe: %e\n", r);
             }
             r = fork();
+            if (r<0) {
+                writef("| not implemented (fork)\n");
+                exit();
+            }
             if (r==0) { //this is child.
                 dup(p[0], 0); // p[0] becomes stdin.
                 close(p[0]);
