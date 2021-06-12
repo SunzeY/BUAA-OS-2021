@@ -71,7 +71,7 @@ fsipc_map(u_int fileid, u_int offset, u_int dstva)
 	req = (struct Fsreq_map *)fsipcbuf;
 	req->req_fileid = fileid;
 	req->req_offset = offset;
-    writef("try to sending message to fileProcess to open a file!\n");
+    //writef("try to sending message to fileProcess to open a file!\n");
 	if ((r = fsipc(FSREQ_MAP, req, dstva, &perm)) < 0) {
         writef("fsProcess return ipc with value %d", r);
 		return r;
