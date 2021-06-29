@@ -213,13 +213,46 @@ readline(char *buf, u_int n)
 	for(i=0; i<n; i++){
 		if((r = read(0, buf+i, 1)) != 1){
 			if(r < 0)
-				writef("read error: %e", r);
+				writef(1, "read error: %e", r);
 			exit();
 		}
-		if(buf[i] == '\b'){
-			if(i > 0)
+        if (buf[i] == 0x1b) {
+            i++;
+            if ((r = read(0, buf+i, 1) != 1)) {
+                 fwritef(1, "wrong when press up!\n");
+            }
+            // fwritef(1, ">>>>>>%x\n", buf[i]);
+            i++;
+            if ((r = read(0, buf+i, 1) != 1)) {
+                fwritef(1, "wrong when press up!\n");
+            }
+            if (buf[i] == 0x41) {
+                fwritef(1, "up\n");
+                user_bzero(buf, n);
+            }
+            else if (buf[i] == 0x42) {
+                fwritef(1, "down\n");
+                user_bzero(buf, n);
+            }
+            //fwritef(1, ">>>>>>>%x\n", buf[i]);
+        }
+        //fwritef(1, "%x\n", buf[i]);
+        /*if(buf[i] == 0x1b) {
+            writef("got\n");
+           if ((r = read(0, buf+i, 1) != 1)) {
+               writef("wrong when press up!\n");
+           }
+           writef("%x\n", r);
+           if ((r = read(0, buf+i, 1) != 1)) {
+               writef("wrong when press up!\n");
+           }
+        }*/
+		if(buf[i] == 0x7f){
+            //user_panic("got \b !\n");
+			if(i > 0) {
+                //fwritef(1, "\x1b[1D\x1b[K");
 				i -= 2;
-			else
+			} else
 				i = 0;
 		}
 		if(buf[i] == '\r' || buf[i] == '\n'){
@@ -242,6 +275,18 @@ usage(void)
 	exit();
 }
 
+int first_run;
+
+void record_history(char* buf, int n) {
+    if (first_run == 0) {
+        // create file ".history"
+        user_create("/.history", 0);
+        first_run = 1
+    }
+    open("/.history", O_APPEND);
+    // record current cmd into .history
+
+}
 void
 umain(int argc, char **argv)
 {
@@ -252,7 +297,9 @@ umain(int argc, char **argv)
 	writef("::                                                         ::\n");
 	writef("::              Super Shell  V0.0.0_1                      ::\n");
 	writef("::                                                         ::\n");
-	writef(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::\n");
+	writef(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+    //writef("\b \b\b \b\b \b\b \b\n");
+    //writef("\n");
 	ARGBEGIN{
 	case 'd':
 		debug_++;
@@ -281,7 +328,7 @@ umain(int argc, char **argv)
 		if (interactive)
 			fwritef(1, "\n$ ");
 		readline(buf, sizeof buf);
-		
+	    record_history(buf, sizeof buf);	
 		if (buf[0] == '#')
 			continue;
 		if (echocmds)

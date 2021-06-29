@@ -87,6 +87,27 @@ open_lookup(u_int envid, u_int fileid, struct Open **po)
 	return 0;
 }
 
+// for challenge -- create file
+void
+serve_create(u_int envid, struct Fsreq_open * rq)
+{
+    u_char path[MAXPATHLEN];
+    struct File *f;
+    int r;
+
+    user_bcopy(rq->req_path, path, MAXPATHLEN);
+    path[MAXPATHLEN - 1] = 0;
+
+    if ((r = file_create((char*) path), &f) < 0) {
+        ipc_send(envid, r, 0, 0);
+        return;
+    }
+
+    f->f_type = rq->req_omode;
+    ipc_send(envid, 0, 0, 0);
+
+}
+
 // Serve requests, sending responses back to envid.
 // To send a result back, ipc_send(envid, r, 0, 0).
 // To include a page, ipc_send(envid, r, srcva, perm).
@@ -265,6 +286,11 @@ serve(void)
 		}
 
 		switch (req) {
+
+            case FSREQ_CREATE:
+                serve_create(whom, (struct Fsreq_open*)REQVA);
+                break;
+
 			case FSREQ_OPEN:
 				serve_open(whom, (struct Fsreq_open *)REQVA);
 				break;

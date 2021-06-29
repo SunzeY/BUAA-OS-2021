@@ -100,6 +100,8 @@ void set_pgfault_handler(void (*fn)(u_int va));
 int fwritef(int fd, const char *fmt, ...);
 
 // fsipc.c
+int fsipc_create(char*, int);
+int user_create(char* path, int isdir);
 int	fsipc_open(const char*, u_int, struct Fd*);
 int	fsipc_map(u_int, u_int, u_int);
 int	fsipc_set_size(u_int, u_int);
@@ -140,6 +142,6 @@ int	sync(void);
 #define	O_TRUNC		0x0200		/* truncate to zero length */
 #define	O_EXCL		0x0400		/* error if already exists */
 #define O_MKDIR		0x0800		/* create directory, not regular file */
-
+#define O_APPEND    0X1000      /* open file with append mode */
 
 #endif
