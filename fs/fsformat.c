@@ -280,6 +280,14 @@ void write_file(struct File *dirf, const char *path) {
 //      We ASSUM that this funcion will never fail
 void write_directory(struct File *dirf, char *name) {
     // Your code here
+    printf("%s\n", name);
+    struct File* target = create_file(dirf);
+    const char* fname = strrchr(name, '/');
+    if(fname) ++fname;
+    else fname = name;
+    strcpy(target->f_name, fname);
+    target->f_size = 0;
+    target->f_type = FTYPE_DIR;
 }
 
 int main(int argc, char **argv) {
@@ -287,7 +295,7 @@ int main(int argc, char **argv) {
 
     init_disk();
 
-    if(argc < 3 || (strcmp(argv[2], "-r") == 0 && argc != 4)) {
+    if(argc < 3) {
         fprintf(stderr, "\
 Usage: fsformat gxemul/fs.img files...\n\
        fsformat gxemul/fs.img -r DIR\n");

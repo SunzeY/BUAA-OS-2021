@@ -24,11 +24,19 @@ FSLIB :=	fs.o \
 		ide.o \
 		test.o
 
+USERDIR := home bin etc
+
 USERAPPS :=  $(user_dir)/num.b  \
 			 $(user_dir)/echo.b \
 			 $(user_dir)/ls.b \
 			 $(user_dir)/sh.b  \
 			 $(user_dir)/cat.b \
+             $(user_dir)/history.b \
+             $(user_dir)/touch.b \
+             $(user_dir)/tree.b \
+             $(user_dir)/mkdir.b \
+             $(user_dir)/profile \
+             $(user_dir)/bin \
 		 $(user_dir)/testptelibrary.b
 
 
@@ -67,7 +75,7 @@ fs.img: $(FSIMGFILES)
 	dd if=/dev/zero of=../gxemul/fs.img bs=4096 count=1024 2>/dev/null
 	gcc $(INCLUDES) fsformat.c -o $(tools_dir)/fsformat -m32
 	chmod +x $(tools_dir)/fsformat
-	$(tools_dir)/fsformat ../gxemul/fs.img $(FSIMGFILES)
+	$(tools_dir)/fsformat ../gxemul/fs.img -r home && $(tools_dir)/fsformat ../gxemul/fs.img home && $(tools_dir)/fsformat ../gxemul/fs.img $(FSIMGFILES)
 
 .PHONY: clean
 

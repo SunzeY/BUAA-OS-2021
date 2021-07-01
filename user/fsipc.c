@@ -31,7 +31,7 @@ fsipc(u_int type, void *fsreq, u_int dstva, u_int *perm)
 // for challenge (create file including dir)
 int fsipc_create(char *path, int isdir) {
     u_int perm;
-    struct Fsreq_open *req;
+    struct Fsreq_create *req;
     req = (struct Fsreq_open*) fsipcbuf;
 
     if (strlen(path) >= MAXPATHLEN) {
@@ -39,7 +39,7 @@ int fsipc_create(char *path, int isdir) {
     }
 
     strcpy((char*)req->req_path, path);
-    req->req_omode = isdir;
+    req->req_isdir = isdir;
 
     return fsipc(FSREQ_CREATE, req, 0, &perm);
 }

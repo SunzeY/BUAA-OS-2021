@@ -175,6 +175,51 @@ err:
 	return r;
 }
 
+int read_line(int fdnum, void* buf, u_int n)
+{
+    int r;
+    struct Dev* dev;
+    struct Fd* fd;
+    char* buff = (char*) buf;
+    if ((r = fd_lookup(fdnum, &fd))<0 ||
+        (r=dev_lookup(fd->fd_dev_id, &dev)<0)) {
+        return r;
+    }
+
+    if ((fd->fd_omode & O_ACCMODE) == O_WRONLY) {
+        writef("[%08x] read %d -- bad mode\n", env->env_id, fdnum);
+        return -E_INVAL;
+    }
+
+    int i = 0;
+    for(i=0; i<n; i++) {
+        buff[i] = 0;
+    }
+    i = 0;
+
+    r = (*dev->dev_read)(fd, buff, 1, fd->fd_offset);
+    if (r == 1) {
+        fd->fd_offset += r;
+        buff[1] = '\0';
+    }
+
+    //writef("[DEBUG] NSIZE = %d", n);
+    while(buff[i++]!='\n' && buff[i-1] != 0 && i <= n) {
+        r = (*dev->dev_read)(fd, (buff+i), 1, fd->fd_offset);
+        if (r == 1) {
+            fd->fd_offset += r;
+            //buff[i+1] = '\0';
+        }
+        //writef(">>>>>%d >>>>%d\n", i, buff[i]);
+
+    }
+    if (buff[i-1] == '\n') {
+        buff[i-1] = '\0';
+        return i-1;
+    }
+    return i;
+}
+
 // Overview:
 //	Read 'n' bytes from 'fd' at the current seek position into 'buf'.
 //

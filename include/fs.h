@@ -64,6 +64,11 @@ struct Super {
 #define FSREQ_SYNC	7
 #define FSREQ_CREATE 8
 
+struct Fsreq_create {
+    char req_path[MAXPATHLEN];
+    int req_isdir;
+};
+
 struct Fsreq_open {
 	char req_path[MAXPATHLEN];
 	u_int req_omode;

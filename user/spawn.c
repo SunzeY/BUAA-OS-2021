@@ -122,7 +122,8 @@ int spawn(char *prog, char **argv)
     // writef("DEBUG::open file %s\n", prog);
     if((r=open(prog, O_RDONLY))<0){
         //writef("DEBUG::open file %s\n", prog);
-		user_panic("spawn ::open line 102 RDONLY wrong!\n");
+        writef("spawn :: connot do command %s!\n", prog);
+		//user_panic("spawn ::open line 102 RDONLY wrong!\n");
 		return r;
 	}
 	// Your code begins here

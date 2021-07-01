@@ -75,6 +75,25 @@ open(const char *path, int mode)
         }
     }
 
+    //writef("opmode %x, append %x\n", mode, O_APPEND);
+    fd->fd_offset = 0;
+    if ((O_APPEND & mode) != 0) {
+        //writef(">>>>>>>>>>>offset is %d\n", size);
+        // fd->fd_offset = size;
+        char buffer[1];
+        buffer[0] = 0;
+        //fd->fd_offset = 0;
+        while (file_read(fd, buffer, 1, fd->fd_offset)) {
+            if (buffer[0] == 0) {
+                break;
+            }
+            fd->fd_offset++;
+        }
+        //writef(".....%c\n", buffer[0]);
+        buffer[0] = 0;
+        //writef(">>>>>>>>>>offset is %d\n", fd->fd_offset);
+    }
+
 	// Step 5: Return the number of file descriptor.
     return fd2num(fd);
 
@@ -138,7 +157,7 @@ file_read(struct Fd *fd, void *buf, u_int n, u_int offset)
 	if (offset > size) {
 		return 0;
 	}
-
+    
 	if (offset + n > size) {
 		n = size - offset;
 	}
@@ -206,6 +225,7 @@ file_write(struct Fd *fd, const void *buf, u_int n, u_int offset)
 
 	// Write the data
 	user_bcopy(buf, (char *)fd2data(fd) + offset, n);
+    //fd->fd_offset += n;
 	return n;
 }
 

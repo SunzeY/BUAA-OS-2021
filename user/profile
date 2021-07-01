@@ -1,0 +1,4 @@
+declare -x HOME="/"
+declare -x PATH="/"
+declare -x USER="SZY"
+declare -x PI="3.1415"

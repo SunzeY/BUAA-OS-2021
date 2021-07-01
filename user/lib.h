@@ -114,6 +114,7 @@ int	fsipc_incref(u_int);
 // fd.c
 int	close(int fd);
 int	read(int fd, void *buf, u_int nbytes);
+int read_line(int fd, void* buf, u_int nbytes);
 int	write(int fd, const void *buf, u_int nbytes);
 int	seek(int fd, u_int offset);
 void	close_all(void);
@@ -143,5 +144,5 @@ int	sync(void);
 #define	O_EXCL		0x0400		/* error if already exists */
 #define O_MKDIR		0x0800		/* create directory, not regular file */
 #define O_APPEND    0X1000      /* open file with append mode */
-
+#define MAXLINE 1024
 #endif

@@ -89,7 +89,7 @@ open_lookup(u_int envid, u_int fileid, struct Open **po)
 
 // for challenge -- create file
 void
-serve_create(u_int envid, struct Fsreq_open * rq)
+serve_create(u_int envid, struct Fsreq_create * rq)
 {
     u_char path[MAXPATHLEN];
     struct File *f;
@@ -103,7 +103,9 @@ serve_create(u_int envid, struct Fsreq_open * rq)
         return;
     }
 
-    f->f_type = rq->req_omode;
+    //writef("%s type = %d\n", f->f_name, rq->req_isdir);
+    f->f_type = rq->req_isdir;
+    //writef(">>%d\n", f->f_type);
     ipc_send(envid, 0, 0, 0);
 
 }
@@ -115,7 +117,7 @@ serve_create(u_int envid, struct Fsreq_open * rq)
 void
 serve_open(u_int envid, struct Fsreq_open *rq)
 {
-	writef("serve_open %08x %x 0x%x\n", envid, (int)rq->req_path, rq->req_omode);
+	//writef("serve_open %08x %x 0x%x\n", envid, (int)rq->req_path, rq->req_omode);
 
 	u_char path[MAXPATHLEN];
 	struct File *f;
@@ -153,6 +155,13 @@ serve_open(u_int envid, struct Fsreq_open *rq)
 	o->o_mode = rq->req_omode;
 	ff->f_fd.fd_omode = o->o_mode;
 	ff->f_fd.fd_dev_id = devfile.dev_id;
+    
+
+    // save offset for O_APPEND (challenge)
+    /*if ((rq->req_omode & O_APPEND) != 0)
+    {
+      ff->f_fd.fd_offset = file_seek(&ff); 
+    }*/
 
 	ipc_send(envid, 0, (u_int)o->o_ff, PTE_V | PTE_R | PTE_LIBRARY);
 }
@@ -288,7 +297,7 @@ serve(void)
 		switch (req) {
 
             case FSREQ_CREATE:
-                serve_create(whom, (struct Fsreq_open*)REQVA);
+                serve_create(whom, (struct Fsreq_create*)REQVA);
                 break;
 
 			case FSREQ_OPEN:

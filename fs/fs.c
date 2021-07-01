@@ -706,6 +706,13 @@ file_open(char *path, struct File **file)
 	return walk_path(path, 0, file, 0);
 }
 
+// for `append` to seek the right position 
+int
+file_seek(struct File **file)
+{
+    
+}
+
 // Overview:
 //	Create "path".
 //
