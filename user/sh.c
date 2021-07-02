@@ -20,7 +20,7 @@ int history_size = 0;
 // eventually (once we parse the space where the nul will go),
 // words get nul-terminated.
 #define WHITESPACE " \t\r\n"
-#define SYMBOLS "<|>&;()${}"
+#define SYMBOLS "<|>&;()\'"
 #define ENVIR
 #define RDONLY
 
@@ -31,6 +31,7 @@ struct envar {
 };
 
 struct envar envars[100];
+int mask = 0;
 
 void
 cleanbuf(char* buff) {
@@ -43,11 +44,6 @@ init_envar()
 {
     int i = 0;
     int r = 0;
-    /*for (i=0; i<99; i++) {
-        envars[i].name = (char*) malloc((sizeof char)*1024);
-        envars[i].value = (char*) malloc((sizeof char)*1024);
-        envars[i].type = ENVIR;
-    }*/
     char buff[1024];
     int fd = open("/profile", O_RDONLY);
     int k = 0;
@@ -72,7 +68,6 @@ init_envar()
             strcpy(envars[i].value, buff);
             read(fd, buff, 1);
             cleanbuf(buff);
-            //writef("name: %s , value: %s\n", envars[i].name, envars[i].value);
             i++;
         }
         else {
@@ -85,19 +80,13 @@ char*
 get_envar_value(char* name)
 {
     int i = 0;
-    int size = 0;
     for (i=0; i<100; i++) {
-        //writef("%s %s\n", envars[i].name, name);
-        //writef("%s\n", envars[i].value);
+        if (envars[i].name[0] == '\0') break;
         if (strcmp(envars[i].name, name) == 0) {
-            /*size = strcpy(value, envars[i].value);
-            *(value+size) = 0;
-            writef("%s\n", envars[i].value);
-            return;*/
             return envars[i].value;
         }
     }
-    char* value = "\0";
+    char* value = "";
     return value;
 }
 
@@ -106,7 +95,6 @@ set_envar_value(char* name, char* value) {
     int i = 0;
     int size = 0;
     int k = 0;
-    writef("name : %s\n", name);
     for(i=0; i<100; i++) {
         if (envars[i].name[0] == '\0') break;
         if (strcmp(envars[i].name, name) == 0) {
@@ -140,17 +128,11 @@ remove_envar(char* name) {
         if (envars[i].name[0] == '\0') break;
         if (strcmp(name, envars[i].name) == 0 && tag == 0) {
             tag = 1;
-            writef("find and unset...\n");
             envars[i] = envars[i+1];
         } else if (tag == 1) {
             envars[i] = envars[i+1];
         }
     }
-    /*for(i=0; i<100; i++) {
-        if (envars[i].name[0] == '\0') break;
-        writef("%s | %s\n", envars[i].name, envars[i].value);
-    }*/
-    //envar[i+1].name[0] = '\0';
     if (tag==0) return;
     int k = 0;
     int fd = open("/profile", O_WRONLY);
@@ -162,8 +144,6 @@ remove_envar(char* name) {
     }
     fwritef(fd, "\0");
     close(fd);
-    //envars[i-1].name[0] = '\0';
-    //set_envar_value(envars[0].name, envars[0].value);
 }
 
 char buffer[4096];
@@ -172,24 +152,16 @@ void
 show_envars_value()
 {
     int i = 0;
-    // writef("in show_envars_value...\n");
-    //cleanbuf(buffer);
     for(i=0; i<100; i++) {
         if (envars[i].name[0] == '\0') break;
         writef("declare -x %s=\"%s\"\n", envars[i].name, envars[i].value);
     }
-    //int fd = open("/profile", O_RDONLY);
-    // writef("open successfully!");
-    //while (read(fd, buffer, sizeof buffer) > 0){
-       // writef("%s", buffer);
-    //}
 }
 
 int
 _gettoken(char *s, char **p1, char **p2)
 {
 	int t;
-
 	if (s == 0) {
 		//if (debug_ > 1) writef("GETTOKEN NULL\n");
 		return 0;
@@ -200,13 +172,14 @@ _gettoken(char *s, char **p1, char **p2)
 	*p1 = 0;
 	*p2 = 0;
 
-	while(strchr(WHITESPACE, *s))
+	while(strchr(WHITESPACE, *s) && !mask && s)
 		*s++ = 0;
 	if(*s == 0) {
 	//	if (debug_ > 1) writef("EOL\n");
 		return 0;
 	}
-	if(strchr(SYMBOLS, *s)){
+
+	if((strchr(SYMBOLS, *s) && !mask) || *s == '\''){
 		t = *s;
 		*p1 = s;
 		*s++ = 0;
@@ -215,31 +188,66 @@ _gettoken(char *s, char **p1, char **p2)
 		return t;
 	}
 	*p1 = s;
-	while(*s && !strchr(WHITESPACE SYMBOLS, *s))
-		s++;
+	while(*s && ((!strchr(WHITESPACE SYMBOLS, *s)) || mask) && *s != '\'') {
+        if (*s == '$' && !mask) {
+            char* start;
+            char end[1024];
+            cleanbuf(end);
+            start = s;
+            s++;
+            char buffer[1024];
+            cleanbuf(buffer);
+            char ch = ' ';
+            if (*s == '{') {
+                ch = '}'; 
+                s++;
+            }
+            int k = 0;
+            while (*(s+k) != ch && *(s+k) != '\n' && *(s+k)!= '\0') {
+                writef(">>>>%d\n", *(s+k));
+                buffer[k] = *(s+k);
+                k++;
+            }
+            buffer[k] = '\0';
+            if (*(s+k) == '}') strcpy(end, s+k+1);
+            else strcpy(end, s+k);
+            char* value = get_envar_value(buffer);
+            for (k=0; value[k]!=0; k++) {
+                *(start+k) = value[k];
+            }
+            *(start+k) = 0;
+            int size = k;
+            for (k=0; end[k]!=0; k++) {
+                *(start+k+size) = end[k];
+            }
+            *(start+k+size) = 0;
+        } else {
+		    s++;
+        }
+    }
 	*p2 = s;
 	if (debug_ > 1) {
 		t = **p2;
 		**p2 = 0;
-//		writef("WORD: %s\n", *p1);
 		**p2 = t;
 	}
 	return 'w';
 }
 
 int
-gettoken(char *s, char **p1)
+gettoken(char *s, char **p1, int* pp)
 {
-	static int c, nc;
+    static int c, nc;
 	static char *np1, *np2;
-
 	if (s) {
 		nc = _gettoken(s, &np1, &np2);
+        *pp = nc;
 		return 0;
 	}
 	c = nc;
 	*p1 = np1;
 	nc = _gettoken(np2, &np1, &np2);
+    *pp = nc;
 	return c;
 }
 
@@ -252,31 +260,46 @@ void do_incmd(char* argv0, char** argv) {
     } else if (strcmp(argv[0], "set") == 0) {
         while (argv[1][p++] != '=');
         argv[1][p-1] = '\0';
-        //writef(">>>%s %s\n", argv[1], (argv[1] + p)); 
         set_envar_value(argv[1], (argv[1]+p));
     } else if (strcmp(argv[0], "unset") == 0) {
         remove_envar(argv[1]);
+    } else if (strcmp(argv[0], "clean") == 0) {
+        PRINT_CLEAN
+        BACK_TO_TOP
     }
 }
 
 #define MAXARGS 16
+int multicmd = 0;
+int backorder = 0;
+
 void
 runcmd(char *s)
 {
 	char *argv[MAXARGS], *t;
 	int argc, c, i, r, p[2], fd, rightpipe;
 	int fdnum;
+    int index = 0;
 	rightpipe = 0;
-	gettoken(s, 0);
+	gettoken(s, 0, &index);
+    if (index == '\'') mask = 1;
+    multicmd = 0;
 again:
 	argc = 0;
+    //mask = 0;
+    index = 0;
 	for(;;){
-		c = gettoken(0, &t);
+		c = gettoken(0, &t, &index);
+        if (index == '\'') {
+            if (mask == 1) mask = 0;
+            else mask = 1;
+        }
 		switch(c){
 		case 0:
             if (strcmp(argv[0], "cd") == 0 ||
                 strcmp(argv[0], "export") == 0 ||
                 strcmp(argv[0], "set") == 0 ||
+                strcmp(argv[0], "clean") == 0 || 
                 strcmp(argv[0], "unset") == 0) {
                 // internal command
                 do_incmd(argv[0], argv); 
@@ -284,6 +307,7 @@ again:
             } else {
 			    goto runit;
             }
+
 		case 'w':
 			if(argc == MAXARGS){
 				writef("too many arguments\n");
@@ -291,8 +315,18 @@ again:
 			}
 			argv[argc++] = t;
 			break;
+
+        case ';':
+            multicmd = 1;
+            goto runit;
+            break;
+
+        case '&':
+            backorder = 1;
+            break;
+
 		case '<':
-			if(gettoken(0, &t) != 'w'){
+			if(gettoken(0, &t, &index) != 'w'){
 				writef("syntax error: < not followed by word\n");
 				exit();
 			}
@@ -302,14 +336,14 @@ again:
                 writef("case '<' : open t failed\n");
                 exit();
             }
-
 			// dup it onto fd 0, and then close the fd you got.
             dup(fd, 0);
             close(fd);
 			// user_panic("< redirection not implemented");
 			break;
+
 		case '>':
-			if(gettoken(0, &t) != 'w'){
+			if(gettoken(0, &t, &index) != 'w'){
 				writef("syntax error: < not followed by word\n");
 				exit();
 			}
@@ -319,12 +353,12 @@ again:
                 writef("case '>' : open t failed\n");
                 exit();
             }
-
 			// dup it onto fd 1, and then close the fd you got.
 			dup(fd, 1);
             close(fd);
             //user_panic("> redirection not implemented");
 			break;
+
 		case '|':
 			// Your code here.
 			// 	First, allocate a pipe.
@@ -375,23 +409,26 @@ runit:
 	}
 	argv[argc] = 0;
 	if (1) {
-		//writef("[%08x] SPAWN:", env->env_id);
-		for (i=0; argv[i]; i++)
+		/*for (i=0; argv[i]; i++)
 			writef(" %s", argv[i]);
-		writef("\n");
+		writef("\n")*/
 	}
 	if ((r = spawn(argv[0], argv)) < 0)
-		writef("spawn %s: %e\n", argv[0], r);
+		//writef("spawn %s: %e\n", argv[0], r);
 	close_all();
 	if (r >= 0) {
 		if (debug_) writef("[%08x] WAIT %s %08x\n", env->env_id, argv[0], r);
-		wait(r);
+		if (!backorder) wait(r);
+        else backorder = 0;
 	}
 	if (rightpipe) {
 		if (debug_) writef("[%08x] WAIT right-pipe %08x\n", env->env_id, rightpipe);
 		wait(rightpipe);
 	}
-
+    if (multicmd) {
+        multicmd = 0;
+        goto again;
+    }
 	exit();
 }
 
@@ -444,22 +481,15 @@ readline(char *buf, u_int n)
                  fwritef(1, "wrong when press up!\n");
             }
             i++;
-            //fwritef(1, ">>>>>>%x\n", buf[i]);
             if ((r = read(0,(buf+i), 1) != 1)) {
                 fwritef(1, "wrong when press up!\n");
             }
-            //fwritef(1, ">>>>>>%x\n", buf[i]);
             if (buf[i] == 0x41) {
-                //fwritef(1, ">>>>>>>>>>>>>>>>>>[>>>>\n");
-                //fwritef(1, "1");
                 flush(buf);
-                //fwritef(1, "num = %d\n", index);
                 historyget(index, history_cmd);
-                //fwritef(1, "cmd = %s\n", history_cmd);
                 strcpy(buf, history_cmd);
                 fwritef(1, " %s", buf);
                 i = strlen(buf)-1;
-                // setting index to its next proper position
                 index = ((index-1)<0? (index-1+history_size) : (index-1))%history_size;
             }
             else if (buf[i] == 0x42) {
@@ -467,27 +497,13 @@ readline(char *buf, u_int n)
                 historyget(index-1, history_cmd);
                 strcpy(buf, history_cmd);
                 fwritef(1, " %s", buf);
-                // setting index to its next proper position
                 index = (index+1)%history_size;
                 i = strlen(buf)-1;
             }
-            //fwritef(1, ">>>>>>>%x\n", buf[i]);
         } else {
             index = history_size - 1;   
         } 
-        //fwritef(1, "%x\n", buf[i]);
-        /*if(buf[i] == 0x1b) {
-            writef("got\n");
-           if ((r = read(0, buf+i, 1) != 1)) {
-               writef("wrong when press up!\n");
-           }
-           writef("%x\n", r);
-           if ((r = read(0, buf+i, 1) != 1)) {
-               writef("wrong when press up!\n");
-           }
-        }*/
 		if(buf[i] == 0x7f){
-            //user_panic("got \b !\n");
 			if(i > 0) {
                 //fwritef(1, "\x1b[1D\x1b[K");
 				i -= 2;
@@ -543,7 +559,6 @@ umain(int argc, char **argv)
 	interactive = '?';
 	echocmds = 0;
     PRINT_INIT;
-    //writef("\b \b\b \b\b \b\b \b\n");
     writef("\n");
 	ARGBEGIN{
 	case 'd':
@@ -576,7 +591,6 @@ umain(int argc, char **argv)
             char* info = get_envar_value("USER");
             PRINT_USERNAME(info);
             PRINT_CURRENT_DIR("/");
-            //writef(" ");
         }
 		readline(buf, sizeof buf);
 	    record_history(buf, sizeof buf);
@@ -592,6 +606,7 @@ umain(int argc, char **argv)
         if (strcmp(argv0, "cd") == 0 ||
             strcmp(argv0, "export") == 0 ||
             strcmp(argv0, "set") == 0 ||
+            strcmp(argv0, "clean") == 0 || 
             strcmp(argv0, "unset") == 0) {
             // internal command
             runcmd(buf);

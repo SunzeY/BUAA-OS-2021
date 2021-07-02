@@ -7,6 +7,9 @@
   make it easy for the need of print info with different
   color and type.
  */
+/* clean cmd */
+#define PRINT_CLEAN  writef("\033[2J"); //clean_screen
+#define BACK_TO_TOP writef("\033[1;1H"); //clean_screen
 
 /*set_front_color*/
 #define RED 1

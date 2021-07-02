@@ -26,7 +26,7 @@ void user_lp_Print(void (*output)(void *, const char *, int),
 				   va_list ap);
 
 void writef(char *fmt, ...);
-
+void old_writef(char* fmt, ...);
 void _user_panic(const char *, int, const char *, ...)
 __attribute__((noreturn));
 
@@ -67,7 +67,7 @@ void syscall_ipc_recv(u_int dstva);
 int syscall_cgetc();
 int syscall_write_dev(u_int va,u_int dev,u_int offset);
 int syscall_read_dev(u_int va,u_int dev,u_int offset);
-
+void syscall_print_string(char* str);
 
 // string.c
 int strlen(const char *s);

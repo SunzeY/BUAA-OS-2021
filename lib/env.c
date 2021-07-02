@@ -28,16 +28,38 @@ extern char *KERNEL_SP;
  * Post-Condition:
  *  return e's envid on success.
  */
+static u_int asid_bitmap[2] = {0};
+
+static u_int asid_alloc() {
+    int i, index, inner;
+    for (i=0; i<64; i++) {
+        index = i >> 5;
+        inner = i & 31;
+        if ((asid_bitmap[index] & (1 << inner)) == 0) {
+            asid_bitmap[index] |= 1 << inner;
+            return i;
+        }
+    }
+    panic("too many process!\n");
+}
+
+static void asid_free(u_int i) {
+    int index, inner;
+    index = i >> 5;
+    inner = i & 31;
+    asid_bitmap[index] &= ~(1 << inner);
+}
 
 u_int mkenvid(struct Env *e)
 {
-    static u_long next_env_id = 0;
+    //static u_long next_env_id = 0;
 
     /*Hint: lower bits of envid hold e's position in the envs array. */
     u_int idx = e - envs;
+    u_int asid = asid_alloc();
 
     /*Hint:  high bits of envid hold an increasing number. */
-    return (++next_env_id << (1 + LOG2NENV)) | idx;
+    return (asid << (1 + LOG2NENV)) | (1 << LOG2NENV) | idx;
 }
 
 /* Overview:
@@ -440,6 +462,8 @@ env_free(struct Env *e)
     e->env_status = ENV_FREE;
     LIST_INSERT_HEAD(&env_free_list, e, env_link);
     LIST_REMOVE(e, env_sched_link);
+
+    asid_free(e->env_id >> 11);
 }
 
 /* Overview:

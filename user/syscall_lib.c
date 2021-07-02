@@ -100,3 +100,8 @@ int syscall_read_dev(u_int va,u_int dev,u_int offset)
 int syscall_load_icode(u_int envid, u_char* binary, u_int size) {
     return msyscall(SYS_load_icode, envid, binary, size, 0, 0);
 }
+
+// for a safer print
+void syscall_print_string(char* str) {
+    msyscall(SYS_print_string, str, 0, 0, 0, 0);
+}

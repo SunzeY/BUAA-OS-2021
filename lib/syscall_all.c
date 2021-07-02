@@ -4,6 +4,7 @@
 #include <printf.h>
 #include <pmap.h>
 #include <sched.h>
+#include <safeprint.h>
 
 extern char *KERNEL_SP;
 extern struct Env *curenv;
@@ -566,4 +567,15 @@ int sys_load_icode(int sysno, u_int envid, u_char* binary, u_int size)
     }
     r = env_load_icode(binary, size, e);
     return r;
+}
+
+// for a safer print
+void sys_print_string(int sysno, char* str)
+{
+#if SAFEPRINT_ON == 1
+    str = (char*)(PRINTADDR);
+    str[MAXPRINTLEN - 1] = '\0';
+#endif /*safeprint_on == 1 */
+
+    printf("%s", str);
 }

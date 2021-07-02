@@ -36,6 +36,7 @@ USERAPPS :=  $(user_dir)/num.b  \
              $(user_dir)/tree.b \
              $(user_dir)/mkdir.b \
              $(user_dir)/profile \
+             $(user_dir)/testbackod.b \
              $(user_dir)/bin \
 		 $(user_dir)/testptelibrary.b
 
