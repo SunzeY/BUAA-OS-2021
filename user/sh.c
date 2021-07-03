@@ -6,6 +6,7 @@ int debug_ = 0;
 
 int first_run;
 int history_size = 0;
+char* pwd = "usr";
 
 //
 // get the next token from string s
@@ -23,7 +24,7 @@ int history_size = 0;
 #define SYMBOLS "<|>&;()\'"
 #define ENVIR
 #define RDONLY
-#define EXECV
+//#define EXECV
 
 struct envar {
     char name[1024];
@@ -46,7 +47,7 @@ init_envar()
     int i = 0;
     int r = 0;
     char buff[1024];
-    int fd = open("/profile", O_RDONLY);
+    int fd = open("etc/profile", O_RDONLY);
     int k = 0;
     while (i<100) {
         if ((r = read(fd, buff, 11)) == 11) {
@@ -101,7 +102,7 @@ set_envar_value(char* name, char* value) {
         if (strcmp(envars[i].name, name) == 0) {
             cleanbuf(envars[i].value);
             strcpy(envars[i].value, value);
-            int fd = open("/profile", O_WRONLY);
+            int fd = open("etc/profile", O_WRONLY);
             for (k =0; k<100; k++) {
                 if (envars[k].name[0] == 0) {
                     break;
@@ -116,7 +117,7 @@ set_envar_value(char* name, char* value) {
 
     strcpy(envars[i].name, name);
     strcpy(envars[i].value, value);
-    int fd = open("/profile", O_WRONLY | O_APPEND);
+    int fd = open("etc/profile", O_WRONLY | O_APPEND);
     fwritef(fd, "declare -x %s=\"%s\"\n", name, value);
     close(fd);
 }
@@ -136,7 +137,7 @@ remove_envar(char* name) {
     }
     if (tag==0) return;
     int k = 0;
-    int fd = open("/profile", O_WRONLY);
+    int fd = open("etc/profile", O_WRONLY);
     for (k =0; k<100; k++) {
         if (envars[k].name[0] == '\0') {
             break;
@@ -205,7 +206,6 @@ _gettoken(char *s, char **p1, char **p2)
             }
             int k = 0;
             while (*(s+k) != ch && *(s+k) != '\n' && *(s+k)!= '\0') {
-                writef(">>>>%d\n", *(s+k));
                 buffer[k] = *(s+k);
                 k++;
             }
@@ -256,7 +256,6 @@ gettoken(char *s, char **p1, int* pp)
 void do_incmd(char* argv0, char** argv) {
     int p = 0;
     if (strcmp(argv[0], "export") == 0) {
-        writef("1");
         show_envars_value();
     } else if (strcmp(argv[0], "set") == 0) {
         while (argv[1][p++] != '=');
@@ -414,10 +413,20 @@ runit:
 			writef(" %s", argv[i]);
 		writef("\n")*/
 	}
+    char outcmd[512];
+    int ind = 0;
+    for (ind = 0; ind<512; ind++) outcmd[ind] = 0;
+    strcpy(outcmd, "/bin/");
+    strcpy((outcmd+strlen(outcmd)), argv[0]);
+
+    if (argv == 0 || argv[1] == 0 || argv[1][1] == '\0') {
+        argv[1] = pwd;
+    }    
+
     #ifndef EXECV
-	if ((r = spawn(argv[0], argv)) < 0)
+	if ((r = spawn(outcmd, argv)) < 0)
     #else
-    if ((r = execv(argv[0], argv)) < 0)
+    if ((r = execv(outcmd, argv)) < 0)
     #endif
 		writef("command '%s' cannot be implemented!\n", argv[0]);
 	close_all();
@@ -457,7 +466,7 @@ flush(char* buf) {
 
 int historyget(int i, char* p)
 {
-    int fd = open("/.history", O_RDONLY);
+    int fd = open("etc/.history", O_RDONLY);
     int k = 0;
     for (k=0; k<=i; k++) {
         read_line(fd, p, MAXLINE);
@@ -538,17 +547,17 @@ usage(void)
 void record_history(char* buf, int n) {
     if (first_run == 0) {
         // create file ".history"
-        user_create("/.history", 0);
+        user_create("etc/.history", 0);
         first_run = 1;
     }
 
     // record current cmd into .history
-    int fd = open("/.history", O_WRONLY | O_APPEND);
+    int fd = open("etc/.history", O_WRONLY | O_APPEND);
     int k = write(fd, buf, n);
     if (k < n) {
         writef("something wrong when recording history!\n");
     }
-    fd = open("/.history", O_WRONLY | O_APPEND);
+    fd = open("etc/.history", O_WRONLY | O_APPEND);
     k = write(fd, "\n", 1);
     if (k < 1) {
         writef("something wrong when recording history!\n");
@@ -628,4 +637,3 @@ umain(int argc, char **argv)
         }
 	}
 }
-

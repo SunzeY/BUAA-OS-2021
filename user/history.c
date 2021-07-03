@@ -1,7 +1,7 @@
 #include "lib.h"
 #define MAXSHOW 32
 
-char* path = "/.history";
+char* path = "etc/.history";
 
 int historyget(int i, char* p)
 {

@@ -6,6 +6,6 @@ umain(int argvn, char** argv) {
         return;
     }
     else {
-        user_create(argv[1], 0);
+        user_create(argv[1], 2);
     }
 }

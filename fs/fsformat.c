@@ -278,7 +278,7 @@ void write_file(struct File *dirf, const char *path) {
 //      
 // Post-Condition:
 //      We ASSUM that this funcion will never fail
-void write_directory(struct File *dirf, char *name) {
+struct File* write_directory(struct File *dirf, char *name) {
     // Your code here
     printf("%s\n", name);
     struct File* target = create_file(dirf);
@@ -288,12 +288,16 @@ void write_directory(struct File *dirf, char *name) {
     strcpy(target->f_name, fname);
     target->f_size = 0;
     target->f_type = FTYPE_DIR;
+    return target;
 }
 
 int main(int argc, char **argv) {
     int i;
 
     init_disk();
+    struct File* bin;
+    struct File* usr;
+    struct File* etc;
 
     if(argc < 3) {
         fprintf(stderr, "\
@@ -309,7 +313,42 @@ Usage: fsformat gxemul/fs.img files...\n\
     }
     else {
         for(i = 2; i < argc; ++i) {
-            write_file(&super.s_root, argv[i]);
+            if (strcmp(argv[i], "../user/bin") == 0) {
+                bin = write_directory(&super.s_root, argv[i]); 
+            }
+            if (strcmp(argv[i], "../user/usr") == 0) {
+                usr = write_directory(&super.s_root, argv[i]);
+            }
+            if (strcmp(argv[i], "../user/etc") == 0) {
+                etc = write_directory(&super.s_root, argv[i]);
+            }
+        }
+
+        for(i = 2; i < argc; ++i) {
+            if (strcmp(argv[i], "../user/testbackod.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/touch.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/profile") == 0) {
+                write_file(etc, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/tree.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/history.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/ls.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/cat.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else {
+                write_file(&super.s_root, argv[i]);
+            }
         }
     }
 

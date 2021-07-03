@@ -24,7 +24,12 @@ struct Dev devfile = {
 int
 user_create(char* path, int isdir)
 {
-    return fsipc_create(path, isdir);
+    fsipc_create(path, isdir);
+    writef("try create %s\n", path);
+    if (open(path, O_RDONLY)< 0) {
+        user_panic("create failed!\n");
+    }
+    writef("create %s succeffully!\n", path);
 }
 
 // Overview:
@@ -70,7 +75,7 @@ open(const char *path, int mode)
 	for (i = 0; i < size; i+=BY2PG) {
         r = fsipc_map(fileid, i, va+i);
         if (r < 0) {
-            // writef("open():cannot map at va!\n");
+            writef("open():cannot map at va!\n");
             return r;
         }
     }
