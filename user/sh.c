@@ -6,7 +6,7 @@ int debug_ = 0;
 
 int first_run;
 int history_size = 0;
-char* pwd = "usr";
+char* pwd = "/usr";
 
 //
 // get the next token from string s
@@ -24,6 +24,7 @@ char* pwd = "usr";
 #define SYMBOLS "<|>&;()\'"
 #define ENVIR
 #define RDONLY
+
 //#define EXECV
 
 struct envar {
@@ -39,6 +40,30 @@ void
 cleanbuf(char* buff) {
     int i = 0;
     for(i=0; buff[i++]=0;buff[i]!=0);
+}
+
+void chpwd(char* argv0, char** argv) {
+    int r = 0;
+    char tmpd[512];
+    if (argv[1] && strcmp(argv[1], "..") == 0) {
+        int i = 0;
+        for (i=1; pwd[strlen(pwd)-i]!='/'; i++);
+        pwd[strlen(pwd) - i] = '\0';
+    } else if (argv[1] && strcmp(argv[1], ".") != 0) {
+        int k = 0;
+        for (k=0; k<512; k++) tmpd[k] = 0;
+        strcpy(tmpd, pwd); 
+        strcpy(tmpd+strlen(tmpd), "/");
+        strcpy(tmpd+strlen(tmpd), argv[1]);
+
+        if ((r = open(tmpd, O_RDONLY)) < 0) {
+            PRINT_COLOR("no such dir!", RED, 0);
+            return;
+        }
+        strcpy(pwd, tmpd);
+    }
+    if (strcmp(pwd, "")) set_envar_value("PWD", "/");
+    else set_envar_value("PWD", pwd);
 }
 
 void
@@ -76,6 +101,8 @@ init_envar()
             break;
         }
     }
+    strcpy(envars[i].name, "PWD");
+    strcpy(envars[i].value, pwd);
 }
 
 char*
@@ -266,6 +293,8 @@ void do_incmd(char* argv0, char** argv) {
     } else if (strcmp(argv[0], "clean") == 0) {
         PRINT_CLEAN
         BACK_TO_TOP
+    } else if (strcmp(argv[0], "cd") == 0) {
+        chpwd(argv[0], argv);
     }
 }
 
@@ -276,6 +305,7 @@ int backorder = 0;
 void
 runcmd(char *s)
 {
+    if ( s == 0 || s[0] == '\0') return;
 	char *argv[MAXARGS], *t;
 	int argc, c, i, r, p[2], fd, rightpipe;
 	int fdnum;
@@ -331,7 +361,13 @@ again:
 				exit();
 			}
 			// Your code here -- open t for readinig,
-            fd = open(t, O_RDONLY);
+            char tmp[512];
+            int k = 0;
+            for (k = 0; k < 512; k++) tmp[k] = 0;
+            strcpy(tmp, pwd); 
+            strcpy(tmp+strlen(tmp), "/");
+            strcpy(tmp+strlen(tmp), t);
+            fd = open(tmp, O_RDONLY);
             if (r<0) {
                 writef("case '<' : open t failed\n");
                 exit();
@@ -348,7 +384,11 @@ again:
 				exit();
 			}
 			// Your code here -- open t for writing,
-            fd = open(t, O_WRONLY);
+            for (k = 0; k < 512; k++) tmp[k] = 0;
+            strcpy(tmp, pwd); 
+            strcpy(tmp+strlen(tmp), "/");
+            strcpy(tmp+strlen(tmp), t);
+            fd = open(tmp, O_WRONLY);
             if (r<0) {
                 writef("case '>' : open t failed\n");
                 exit();
@@ -418,17 +458,34 @@ runit:
     for (ind = 0; ind<512; ind++) outcmd[ind] = 0;
     strcpy(outcmd, "/bin/");
     strcpy((outcmd+strlen(outcmd)), argv[0]);
-
-    if (argv == 0 || argv[1] == 0 || argv[1][1] == '\0') {
+    char pargv [512];
+    
+    //writef("arrive here1!\n");
+    if (argv == 0 || argv[1] == 0 || argv[1][0] == '\0') {
         argv[1] = pwd;
-    }    
+    } else {
+        int i = 1;
+        //writef("arrive here2!\n");
+        //writef("%s\n", argv[1]);
+        for (i=1; (argv[i] != 0 && argv[i][0] != '-'); i++) {
+            for (ind = 0; ind<512; ind++) pargv[ind] = 0;
+            strcpy(pargv, pwd);
+            strcpy((pargv + strlen(pargv)), "/");
+            strcpy((pargv + strlen(pargv)), argv[i]);
+            strcpy(argv[i], pargv);
+            //writef("changed : %s\n", argv[i]);
+        }
+    }
 
     #ifndef EXECV
-	if ((r = spawn(outcmd, argv)) < 0)
+	if ((r = spawn(outcmd, argv)) < 0) {
     #else
-    if ((r = execv(outcmd, argv)) < 0)
+    if ((r = execv(outcmd, argv)) < 0) {
     #endif
-		writef("command '%s' cannot be implemented!\n", argv[0]);
+        PRINT_FONT_RED
+		writef("command '%s' cannot be implemented!\n\033[1A", argv[0]);
+        PRINT_ATTR_REC
+    }
 	close_all();
 	if (r >= 0) {
 		if (debug_) writef("[%08x] WAIT %s %08x\n", env->env_id, argv[0], r);
@@ -467,6 +524,9 @@ flush(char* buf) {
 int historyget(int i, char* p)
 {
     int fd = open("etc/.history", O_RDONLY);
+    if (fd < 0) {
+        return;
+    }
     int k = 0;
     for (k=0; k<=i; k++) {
         read_line(fd, p, MAXLINE);
@@ -557,7 +617,8 @@ void record_history(char* buf, int n) {
     if (k < n) {
         writef("something wrong when recording history!\n");
     }
-    fd = open("etc/.history", O_WRONLY | O_APPEND);
+    close(fd);
+    fd= open("etc/.history", O_WRONLY | O_APPEND);
     k = write(fd, "\n", 1);
     if (k < 1) {
         writef("something wrong when recording history!\n");
@@ -604,7 +665,8 @@ umain(int argc, char **argv)
             writef("\n");
             char* info = get_envar_value("USER");
             PRINT_USERNAME(info);
-            PRINT_CURRENT_DIR("/");
+            if (strcmp(pwd, "") == 0) PRINT_CURRENT_DIR("/");
+            else PRINT_CURRENT_DIR(pwd);
         }
 		readline(buf, sizeof buf);
 	    record_history(buf, sizeof buf);

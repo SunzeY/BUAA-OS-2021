@@ -40,7 +40,7 @@ void
 ls1(char *prefix, u_int isdir, u_int size, char *name)
 {
 	char *sep;
-
+    
 	if(flag['l'])
 		fwritef(1, "%11d %c ", size, isdir ? 'd' : '-');
 	if(prefix) {
@@ -48,8 +48,13 @@ ls1(char *prefix, u_int isdir, u_int size, char *name)
 			sep = "/";
 		else
 			sep = "";
-		fwritef(1, "%s%s", prefix, sep);
+		//fwritef(1, "%s%s", prefix, sep);
 	}
+    //int k = 0;
+    //char name0[512];
+    //for (k=strlen(name)-1; name[k] != '/'; name--);
+    //strcpy(name0,(name+k));
+    //name0[strlen(name+k)] = 0;
 	fwritef(1, "%s", name);
 	if(flag['F'] && isdir)
 		fwritef(1, "/");

@@ -446,6 +446,7 @@ env_free(struct Env *e)
     LIST_REMOVE(e, env_sched_link);
 
     asid_free(e->env_id >> 11);
+    //printf("env_free [%x]\n", e->env_id);
 }
 
 /* Overview:

@@ -24,12 +24,14 @@ struct Dev devfile = {
 int
 user_create(char* path, int isdir)
 {
+    int r = 0;
     fsipc_create(path, isdir);
-    writef("try create %s\n", path);
-    if (open(path, O_RDONLY)< 0) {
-        user_panic("create failed!\n");
+    //writef("try create %s\n", path);
+    if ((r = open(path, O_RDONLY)) < 0) {
+        //user_panic("create failed!\n");
+        return r;
     }
-    writef("create %s succeffully!\n", path);
+    //writef("create %s succeffully!\n", path);
 }
 
 // Overview:
@@ -52,6 +54,7 @@ open(const char *path, int mode)
 	// Hint: Please use fd_alloc.
     r = fd_alloc(&fd);
     if (r < 0) {
+        writef("a");
         return r;
     }
 

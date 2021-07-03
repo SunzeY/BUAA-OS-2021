@@ -343,10 +343,21 @@ Usage: fsformat gxemul/fs.img files...\n\
             else if (strcmp(argv[i], "../user/ls.b") == 0) {
                 write_file(bin, argv[i]); 
             }
+            else if (strcmp(argv[i], "../user/echo.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/num.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
+            else if (strcmp(argv[i], "../user/mkdir.b") == 0) {
+                write_file(bin, argv[i]); 
+            }
             else if (strcmp(argv[i], "../user/cat.b") == 0) {
                 write_file(bin, argv[i]); 
             }
-            else {
+            else if (strcmp(argv[i], "../user/bin") != 0 && 
+                     strcmp(argv[i], "../user/usr") != 0 &&
+                     strcmp(argv[i], "../user/etc") != 0){
                 write_file(&super.s_root, argv[i]);
             }
         }

@@ -36,7 +36,7 @@ treePath(char* path, int offset) {
         }
         if (f.f_name[0]!= 0 && f.f_type == FTYPE_DIR){
             for(m=0; m<offset; m++) {
-                if (m%5 == 0) {
+                if (m%3 == 0 && (!end || m != offset - offset % 3)) {
                     writef("│");
                 } else {
                     writef(" ");
@@ -56,14 +56,21 @@ treePath(char* path, int offset) {
             treePath(tempath, offset+3);
         } else if (f.f_name[0] != 0 ){
              for(m=0; m<offset; m++) {
-                if (m%5 == 0) {
+                if (m%3 == 0 && (!end || m != offset - offset % 3)) {
                     writef("│");
                 } else {
                     writef(" ");
                 }
              }   
-             if (end) writef("└──%s\n\033[1A", f.f_name);
-             else writef("├──%s\n\033[1A", f.f_name);
+             if (end) writef("└──");
+             else writef("├──");
+             if (strcmp((f.f_name +strlen(f.f_name)-2), ".b") == 0){
+                PRINT_FONT_GRE
+                writef("%s\n\033[1A", f.f_name);
+                PRINT_ATTR_REC
+             } else {
+                writef("%s\n\033[1A", f.f_name);
+             }
         }
     }
     close(fd);

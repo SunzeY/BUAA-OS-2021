@@ -141,7 +141,7 @@ int execv(char* prog, char** argv)
     }
     close(fd);
     
-    writef("execv : go to syscall...\n");
+    //writef("execv : go to syscall...\n");
     if ((r=syscall_execv(prog, argv, (void*) elfbuf, (void*)(&binaryStat), (void*) binary)<0)) {
         //writef("execve :: connnot do command %s!\n", prog);
         return r;
@@ -167,7 +167,7 @@ int spawn(char *prog, char **argv)
     // writef("DEBUG::open file %s\n", prog);
     if((r=open(prog, O_RDONLY))<0){
         //writef("DEBUG::open file %s\n", prog);
-        writef("spawn :: connot do command %s!\n", prog);
+        //writef("spawn :: connot do command %s!\n", prog);
 		//user_panic("spawn ::open line 102 RDONLY wrong!\n");
 		return r;
 	}
@@ -216,10 +216,11 @@ int spawn(char *prog, char **argv)
     if (r<0) return r;
     syscall_load_icode(child_envid, binary, binaryStat.st_size);
     size = binaryStat.st_size;
+    //close_all();
     close(fd);
 
 	struct Trapframe *tf;
-	writef("\n::::::::::spawn size : %x  sp : %x::::::::\n",size,esp);
+	//writef("\n::::::::::spawn size : %x  sp : %x::::::::\n",size,esp);
 	tf = &(envs[ENVX(child_envid)].env_tf);
 	tf->pc = UTEXT;
 	tf->regs[29]=esp;

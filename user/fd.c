@@ -22,7 +22,7 @@ dev_lookup(int dev_id, struct Dev **dev)
 			return 0;
 		}
 
-	writef("[%08x] unknown device type %d\n", env->env_id, dev_id);
+	//writef("[%08x] unknown device type %d\n", env->env_id, dev_id);
 	return -E_INVAL;
 }
 
@@ -38,6 +38,7 @@ fd_alloc(struct Fd **fd)
 	// Return 0 on success, or an error code on error.
 	u_int va;
 	u_int fdno;
+    static int k = 0;
 
 	for (fdno = 0; fdno < MAXFD - 1; fdno++) {
 		va = INDEX2FD(fdno);
@@ -52,7 +53,10 @@ fd_alloc(struct Fd **fd)
 			return 0;
 		}
 	}
-
+    /*fd = (struct Fd*) INDEX2FD((fdno+k));
+    k++;
+    return 0;*/
+    //user_panic("reach last!\n");
 	return -E_MAX_OPEN;
 }
 
@@ -79,6 +83,9 @@ fd_lookup(int fdnum, struct Fd **fd)
 		*fd = (struct Fd *)va;
 		return 0;
 	}
+
+    //*fd = (struct Fd*) INDEX2FD(fdnum);
+    //return 0;
 
 	return -E_INVAL;
 }
@@ -112,7 +119,8 @@ close(int fdnum)
 		||  (r = dev_lookup(fd->fd_dev_id, &dev)) < 0) {
 		return r;
 	}
-	//fd_close(fd); 
+	//fd_close(fd);
+    //writef("fd : close fd %d, addr %x\n", fdnum, fd);
 	r = (*dev->dev_close)(fd);
 	fd_close(fd);
 	return r;

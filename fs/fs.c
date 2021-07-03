@@ -695,7 +695,7 @@ walk_path(char *path, struct File **pdir, struct File **pfile, char *lastelem, c
                                         }
                                         *pfile = 0;
                                 }
-                                writef("file doesn't exsit!\n");
+                                //writef("file doesn't exsit!\n");
                                 return r;
                         }
                 } else {

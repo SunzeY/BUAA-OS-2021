@@ -417,11 +417,14 @@ page_remove(Pde *pgdir, u_long va)
 
     /* Step 1: Get the page table entry, and check if the page table entry is valid. */
     ppage = page_lookup(pgdir, va, &pagetable_entry);
-
+    
+    Pte *pte;
+    pgdir_walk(pgdir, va, 0, &pte);
     if (ppage == 0) {
         return;
     }
-
+    *pte = (*pte & (~PTE_V));
+    //*pgdir = (*pgdir & (~PTE_V));
     /* Step 2: Decrease `pp_ref` and decide if it's necessary to free this page. */
 
     /* Hint: When there's no virtual address mapped to this page, release it. */

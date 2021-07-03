@@ -5,7 +5,7 @@ umain() {
     int k = 0;
     int r = 0;
     int u = 0;
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 4; i++) {
         r = fork();
         if (r!=0) wait(r);
         for (k=0; k<1000; k++);

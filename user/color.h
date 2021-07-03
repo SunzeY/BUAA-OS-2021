@@ -58,7 +58,7 @@
 
 #define PRINT_CURRENT_DIR(info) do{\
         PRINT_ATTR_BOL                 \
-        PRINT_FONT_BLU                 \
+        PRINT_FONT_CYA                 \
         writef("%s", info);            \
         PRINT_ATTR_REC                 \
         writef("$ ");                   \
