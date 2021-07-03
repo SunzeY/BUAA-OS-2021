@@ -59,7 +59,7 @@ void sched_yield(void)
         } while (e == NULL || e->env_status == ENV_NOT_RUNNABLE);
      }
      count--;
-     env_run(e);
+     env_run(e, 1);
     
     //method 2 run curenv;
      /*count--;

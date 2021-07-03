@@ -23,6 +23,7 @@ int history_size = 0;
 #define SYMBOLS "<|>&;()\'"
 #define ENVIR
 #define RDONLY
+#define EXECV
 
 struct envar {
     char name[1024];
@@ -413,8 +414,12 @@ runit:
 			writef(" %s", argv[i]);
 		writef("\n")*/
 	}
+    #ifndef EXECV
 	if ((r = spawn(argv[0], argv)) < 0)
-		//writef("spawn %s: %e\n", argv[0], r);
+    #else
+    if ((r = execv(argv[0], argv)) < 0)
+    #endif
+		writef("command '%s' cannot be implemented!\n", argv[0]);
 	close_all();
 	if (r >= 0) {
 		if (debug_) writef("[%08x] WAIT %s %08x\n", env->env_id, argv[0], r);

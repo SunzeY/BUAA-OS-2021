@@ -160,9 +160,7 @@ env_setup_vm(struct Env *e)
         panic("env_setup_vm - page alloc error\n");
         return r;
     }
-    // printf(">>>>>>>>>>>>>r=%d\n",r);
 	p->pp_ref++;
-    //printf("%d\n", p->pp_ref);
 	pgdir = (Pde*)page2kva(p);
 
     /*Step 2: Zero pgdir's field before UTOP. */
@@ -181,15 +179,10 @@ env_setup_vm(struct Env *e)
 		if(i!=PDX(UVPT))
         pgdir[i] = boot_pgdir[i];
 	}
-   // printf("finish upper!\n");
     e->env_pgdir = pgdir;
-   // printf("\n>>>>>>>>>pgdir:%x\n", pgdir);
 	e->env_cr3 = PADDR(pgdir);
-    //printf("finsh a\n");
-    // UVPT maps the env's own page table, with read-only permission.
     e->env_pgdir[PDX(UVPT)]  = e->env_cr3 | PTE_V | PTE_R;
     e->env_pgdir[PDX(VPT)] = e->env_cr3;
-    //printf("ﬁnish all\n");
     return 0;
 }
 
@@ -220,20 +213,12 @@ env_alloc(struct Env **new, u_int parent_id)
     struct Env *e;
 
     /*Step 1: Get a new Env from env_free_list*/
-//	if(e = LIST_FIRST(&env_free_list)==NULL) 
- //   {   
-  //      *new = NULL;
-//		return -E_NO_FREE_ENV;
-//	}
     if(LIST_EMPTY(&env_free_list)) return *new = NULL, -E_NO_FREE_ENV;
     e = LIST_FIRST(&env_free_list);
     /*Step 2: Call certain function(has been completed just now) to init kernel memory layout for this new Env.
      *The function mainly maps the kernel address to this new Env address. */
-//	if((r = env_setup_vm(e)<0)) {
-   //     return r;
-   // }
-   // printf(">>>>>>>>>>>>>>%x", e);
-   env_setup_vm(e);
+    
+    env_setup_vm(e);
 
     /*Step 3: Initialize every field of new Env with appropriate values.*/
 	e->env_id = mkenvid(e);
@@ -247,7 +232,6 @@ env_alloc(struct Env **new, u_int parent_id)
 
     /*Step 5: Remove the new Env from env_free_list. */
     LIST_REMOVE(e, env_link);
-    //LIST_INSERT_HEAD(&env_sched_list[0], e, env_sched_link);
     *new = e;
     return 0;
 }
@@ -318,9 +302,7 @@ static int load_icode_mapper(u_long va, u_int32_t sgsize,
         size = MIN(BY2PG, sgsize - i);
         r = page_alloc(&p);
         if (r!=0) return r;
-        //p->pp_ref++;
         page_insert(env->env_pgdir, p, va+i, PTE_R);
-        //bzero((void*)page2kva(p), size);
         i += size;
     }
     return 0;
@@ -504,13 +486,13 @@ extern void lcontext(u_int contxt);
  */
 /*** exercise 3.10 ***/
 void
-env_run(struct Env *e)
+env_run(struct Env *e, int a)
 {
     /*Step 1: save register state of curenv. */
     /* Hint: if there is an environment running, you should do
     *  switch the context and save the registers. You can imitate env_destroy() 's behaviors.*/
     //struct Trapframe *old = (struct Trapframe*) (TIMESTACK - sizeof(struct Trapframe));
-    if(curenv) {
+    if(curenv && a) {
        // printf("old env to be replaced with pri %d\n", curenv->env_pri);
         struct Trapframe *old;
         old = (struct Trapframe*) (TIMESTACK - sizeof(struct Trapframe));
@@ -518,6 +500,8 @@ env_run(struct Env *e)
         //curenv->env_tf = *((struct Trapframe*)(TIMESTACK - sizeof(struct Trapframe)));
         curenv->env_tf.pc = curenv->env_tf.cp0_epc;
         //printf("epc_to_be_set:%x\n", e->env_tf.cp0_epc);
+    } else if (curenv) {
+        // clean_up curenv.
     }
     /*Step 2: Set 'curenv' to the new environment. */
     curenv = e;

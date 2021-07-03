@@ -24,4 +24,5 @@
 #define SYS_read_dev		((__SYSCALL_BASE ) + (16) )
 #define SYS_load_icode      ((__SYSCALL_BASE ) + (17) )
 #define SYS_print_string    ((__SYSCALL_BASE ) + (18) )
+#define SYS_execv           ((__SYSCALL_BASE ) + (19) )
 #endif

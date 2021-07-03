@@ -1,10 +1,12 @@
 #include "../drivers/gxconsole/dev_cons.h"
+#include "../user/lib.h"
 #include <mmu.h>
 #include <env.h>
 #include <printf.h>
 #include <pmap.h>
 #include <sched.h>
 #include <safeprint.h>
+#include <kerelf.h>
 
 extern char *KERNEL_SP;
 extern struct Env *curenv;
@@ -561,9 +563,13 @@ int sys_load_icode(int sysno, u_int envid, u_char* binary, u_int size)
 {
     int r;
     struct Env* e;
-    r = envid2env(envid, &e, 0);
-    if (r < 0) {
-        return r;
+    if (envid == 0) {
+        e = curenv;
+    } else {
+        r = envid2env(envid, &e, 0);
+        if (r < 0) {
+            return r;
+        }
     }
     r = env_load_icode(binary, size, e);
     return r;
@@ -575,7 +581,128 @@ void sys_print_string(int sysno, char* str)
 #if SAFEPRINT_ON == 1
     str = (char*)(PRINTADDR);
     str[MAXPRINTLEN - 1] = '\0';
-#endif /*safeprint_on == 1 */
+#endif /*safeprint_on == 1*/
 
     printf("%s", str);
+}
+
+#define TMPPAGE		(BY2PG)
+#define TMPPAGETOP	(TMPPAGE+BY2PG)
+
+int
+strlen(const char *s)
+{
+	int n;
+
+	for (n=0; *s; s++)
+		n++;
+	return n;
+}
+
+static int
+kkernal_init_stack(u_int child, char **argv, u_int *init_esp)
+{
+	int argc, i, r, tot;
+	char *strings;
+	u_int *args;
+
+	// Count the number of arguments (argc)
+	// and the total amount of space needed for strings (tot)
+	tot = 0;
+	for (argc=0; argv[argc]; argc++)
+		tot += strlen(argv[argc])+1;
+
+	// Make sure everything will fit in the initial stack page
+	if (ROUND(tot, 4)+4*(argc+3) > BY2PG)
+		return -E_NO_MEM;
+
+	// Determine where to place the strings and the args array
+	strings = (char*)TMPPAGETOP - tot;
+	args = (u_int*)(TMPPAGETOP - ROUND(tot, 4) - 4*(argc+1));
+
+	if ((r = sys_mem_alloc(0, 0, TMPPAGE, PTE_V|PTE_R)) < 0)
+		return r;
+	// Replace this with your code to:
+	//
+	//	- copy the argument strings into the stack page at 'strings'
+	char *ctemp,*argv_temp;
+	u_int j;
+	ctemp = strings;
+	for(i = 0;i < argc; i++)
+	{
+		argv_temp = argv[i];
+		for(j=0;j < strlen(argv[i]);j++)
+		{
+			*ctemp = *argv_temp;
+			ctemp++;
+			argv_temp++;
+		}
+		*ctemp = 0;
+		ctemp++;
+	}
+	//	- initialize args[0..argc-1] to be pointers to these strings
+	//	  that will be valid addresses for the child environment
+	//	  (for whom this page will be at USTACKTOP-BY2PG!).
+	ctemp = (char *)(USTACKTOP - TMPPAGETOP + (u_int)strings);
+	for(i = 0;i < argc;i++)
+	{
+		args[i] = (u_int)ctemp;
+		ctemp += strlen(argv[i])+1;
+	}
+	//	- set args[argc] to 0 to null-terminate the args array.
+	ctemp--;
+	args[argc] = ctemp;
+	//	- push two more words onto the child's stack below 'args',
+	//	  containing the argc and argv parameters to be passed
+	//	  to the child's umain() function.
+	u_int *pargv_ptr;
+	pargv_ptr = args - 1;
+	*pargv_ptr = USTACKTOP - TMPPAGETOP + (u_int)args;
+	pargv_ptr--;
+	*pargv_ptr = argc;
+	//
+	//	- set *init_esp to the initial stack pointer for the child
+	//
+	*init_esp = USTACKTOP - TMPPAGETOP + (u_int)pargv_ptr;
+//	*init_esp = USTACKTOP;	// Change this!
+
+	if ((r = sys_mem_map(0, 0, TMPPAGE, child, USTACKTOP-BY2PG, PTE_V|PTE_R)) < 0)
+		goto error;
+	if ((r = sys_mem_unmap(0, 0, TMPPAGE)) < 0)
+		goto error;
+
+	return 0;
+
+error:
+	sys_mem_unmap(0, 0, TMPPAGE);
+	return r;
+}
+
+int sys_execv(int sysno, char* prog, char** argv, void* elfbuf, void* _binaryStat, void* _binary) {
+    Elf32_Ehdr* elf = (Elf32_Ehdr*) elfbuf;
+    Elf32_Phdr* ph;
+    int r = 0;
+    char* binary = (char*) _binary;
+
+    u_int esp = 0; 
+    u_int envid = curenv->env_id;
+    printf("envid [%x]\n", envid);
+    r = kkernal_init_stack(envid, argv, &esp);
+    if (r < 0){
+        return r;
+    }
+    struct Stat* binaryStat = (struct Stat*)_binaryStat;
+    
+    sys_load_icode(0, 0, binary, binaryStat->st_size);
+    //size = binaryStat->st_size;
+    printf("seting tf..\n");
+    bcopy((void*)KERNEL_SP - sizeof(struct Trapframe), &(curenv->env_tf), sizeof(struct Trapframe));
+
+    struct Trapframe* tf;
+    tf = &(curenv->env_tf);
+    (tf->regs)[29] = esp;
+    tf->cp0_epc = UTEXT;
+    tf->pc = UTEXT;
+    env_run(curenv, 0);
+    return 0;
 }

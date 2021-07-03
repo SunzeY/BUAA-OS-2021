@@ -36,6 +36,7 @@ __attribute__((noreturn));
 /////////////////////////////////////////////////////fork spawn
 int spawn(char *prog, char **argv);
 int spawnl(char *prot, char *args, ...);
+int execv(char* prog, char** argv);
 int fork(void);
 
 void user_bcopy(const void *src, void *dst, size_t len);

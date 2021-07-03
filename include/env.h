@@ -57,7 +57,7 @@ void env_create(u_char *binary, int size);
 void env_destroy(struct Env *e);
 
 int envid2env(u_int envid, struct Env **penv, int checkperm);
-void env_run(struct Env *e);
+void env_run(struct Env *e, int a);
 
 // lab6 for spawn
 

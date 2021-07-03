@@ -3,6 +3,7 @@
 #include <mmu.h>
 #include <env.h>
 #include <trap.h>
+#include <fs.h>
 
 void syscall_putchar(char ch)
 {
@@ -104,4 +105,9 @@ int syscall_load_icode(u_int envid, u_char* binary, u_int size) {
 // for a safer print
 void syscall_print_string(char* str) {
     msyscall(SYS_print_string, str, 0, 0, 0, 0);
+}
+
+// execv
+int syscall_execv(char* prog, char** argv, void* elfbuf, void* binaryStat, void* binary) {
+    msyscall(SYS_execv, prog, argv, elfbuf, binaryStat, binary);
 }

@@ -105,6 +105,51 @@ usr_load_elf(int fd , Elf32_Phdr *ph, int child_envid){
 	return 0;
 }
 
+int execv(char* prog, char** argv) 
+{
+    char elfbuf[512];
+    Elf32_Ehdr* elf;
+    int fd = 0;
+    int r = 0;
+    if ((r=open(prog, O_RDONLY))< 0) {
+        return r;
+    }
+    fd = r;
+    r = read(fd, elfbuf, 512);
+    if (r < 0) {
+        return r;
+    }
+
+    if (strlen(elfbuf) < 4 || !usr_is_elf_format(elfbuf)) {
+        return -E_INVAL;
+    }
+    elf = (Elf32_Ehdr*)elfbuf;
+    if (((Elf32_Ehdr*)elf)->e_type != 2) {
+        return -E_INVAL;
+    }
+    
+    struct Stat binaryStat;
+    r = fstat(fd, &binaryStat);
+    if (r < 0) {
+        return r;
+    }
+
+    char* binary;
+    r = read_map(fd, 0, &binary);
+    if (r<0) {
+        return r;
+    }
+    close(fd);
+    
+    writef("execv : go to syscall...\n");
+    if ((r=syscall_execv(prog, argv, (void*) elfbuf, (void*)(&binaryStat), (void*) binary)<0)) {
+        //writef("execve :: connnot do command %s!\n", prog);
+        return r;
+    }
+
+    return 0;
+}
+
 int spawn(char *prog, char **argv)
 {
 	u_char elfbuf[512];
@@ -135,7 +180,7 @@ int spawn(char *prog, char **argv)
     if (strlen(elfbuf)<4 || !usr_is_elf_format(elfbuf)) {
         return -E_INVAL;
     }
-    elf = (Elf32_Ehdr*)elf;
+    elf = (Elf32_Ehdr*)elfbuf;
     if(elf->e_type != 2) {
         return -E_INVAL;
     }
