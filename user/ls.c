@@ -12,7 +12,8 @@ ls(char *path, char *prefix)
 	struct Stat st;
 
 	if ((r=stat(path, &st)) < 0)
-		user_panic("stat %s: %e", path, r);
+		//user_panic("stat %s: %e", path, r);
+        return; 
 	if (st.st_isdir && !flag['d'])
 		lsdir(path, prefix);
 	else
@@ -26,14 +27,15 @@ lsdir(char *path, char *prefix)
 	struct File f;
 
 	if ((fd = open(path, O_RDONLY)) < 0)
-		user_panic("open %s: %e", path, fd);
+		//user_panic("open %s: %e", path, fd);
+        return fd;
 	while ((n = readn(fd, &f, sizeof f)) == sizeof f)
 		if (f.f_name[0])
 			ls1(prefix, f.f_type==FTYPE_DIR, f.f_size, f.f_name);
-	if (n > 0)
-		user_panic("short read in directory %s", path);
-	if (n < 0)
-		user_panic("error reading directory %s: %e", path, n);
+	if (n > 0);
+		//user_panic("short read in directory %s", path);
+	if (n < 0);
+		//user_panic("error reading directory %s: %e", path, n);
 }
 
 void

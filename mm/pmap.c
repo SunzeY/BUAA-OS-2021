@@ -423,7 +423,7 @@ page_remove(Pde *pgdir, u_long va)
     if (ppage == 0) {
         return;
     }
-    *pte = (*pte & (~PTE_V));
+    //*pte = (*pte & (~PTE_V));
     //*pgdir = (*pgdir & (~PTE_V));
     /* Step 2: Decrease `pp_ref` and decide if it's necessary to free this page. */
 

@@ -461,9 +461,9 @@ runit:
     char pargv [512];
     
     //writef("arrive here1!\n");
-    if (argv == 0 || argv[1] == 0 || argv[1][0] == '\0') {
+    if ((argv == 0 || argv[1] == 0 || argv[1][0] == '\0') && strcmp(argv[0], "history.b") != 0) {
         argv[1] = pwd;
-    } else {
+    } else if (strcmp(argv[0], "echo.b")!= 0){
         int i = 1;
         //writef("arrive here2!\n");
         //writef("%s\n", argv[1]);
