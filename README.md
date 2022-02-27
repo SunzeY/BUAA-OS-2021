@@ -7,7 +7,7 @@
 ```shell
 cd /tmp
 chmod +x auth_client
-./author_client -u 用户名 -p 密码
+./auth_client -u 用户名 -p 密码
 ```
 
 提示认证成功后即可上网
@@ -39,7 +39,7 @@ ssh 1937xxxx@lab.os.buaa.edu.cn
 
 在vscode中`remote-explorer`插件，在sshTargets中选择设置, 找到之前注册了Host的config文件,此后即可远程链接跳板机
 
-![](/home/szy/Desktop/BUAA-OS-2021/ssh.png)
+![](./ssh.png)
 
 
 
