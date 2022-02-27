@@ -39,7 +39,7 @@ ssh 1937xxxx@lab.os.buaa.edu.cn
 
 在vscode中`remote-explorer`插件，在sshTargets中选择设置, 找到之前注册了Host的config文件,此后即可远程链接跳板机
 
-![](./ssh.png)
+![](ssh.png)
 
 
 
